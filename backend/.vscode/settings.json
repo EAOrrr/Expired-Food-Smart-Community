@@ -1,0 +1,7 @@
+{
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/373bd898-8483-4316-94d4-387b25f1b01f/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/one-million-plan",
+    "appService.deploySubpath": "."
+}

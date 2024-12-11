@@ -34,6 +34,10 @@ module.exports = {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
+      price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,

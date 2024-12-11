@@ -4,8 +4,17 @@ const { Cart, Product, User } = require('../models');
 
 router.get('/me', userExtractor, async (req, res) => {
   const user = req.user
-  const products = await user.getCartProducts()
-  res.json(products)
+  // const products = await user.getCartProducts()
+  const carts = await Cart.findAll({
+    where: {
+      userId: user.userId
+    },
+    include: {
+      model: Product,
+      as: 'Product'
+    }
+  })
+  res.json(carts)
 })
 
 router.post('/:id', userExtractor, async (req, res) => {

@@ -34,7 +34,11 @@ OrderProduct.init({
   subtotal: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
-  }
+  },
+  price: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
 }, {
   sequelize,
   underscored: true,

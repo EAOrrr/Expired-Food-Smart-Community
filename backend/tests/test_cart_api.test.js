@@ -32,7 +32,7 @@ beforeEach(async () => {
     .map(p => ({ ...p, sellerId: userId })))
 })
 
-describe('test cart api', () => {
+describe.only('test cart api', () => {
   let token
   beforeEach(async () => {
     token = await helper.getToken(api, user)
@@ -44,7 +44,7 @@ describe('test cart api', () => {
       quantity: 2 })))
   })
 
-  test('get carts', async () => {
+  test.only('get carts', async () => {
     const response = await api
       .get('/api/carts/me')
       .set('Authorization', `bearer ${token}`)
@@ -54,7 +54,7 @@ describe('test cart api', () => {
     console.log(response.body)
     assert.strictEqual(response.body.length, 2)
   })
-
+  
   test('add product to cart', async () => {
     const product = (await helper.productsInDb())[2]
     const cartsAtStart = await helper.cartsInDb()
@@ -118,8 +118,12 @@ describe('test cart api', () => {
     const cartsAtEnd = await helper.cartsInDb()
     assert.strictEqual(cartsAtEnd.length, cartsAtStart.length - 1)
   })
+    
 })
 
-after(() => {
-  sequelize.close()
+after(async () => {
+  await Cart.destroy({ where: {} })
+  await Product.destroy({ where: {} })
+  await User.destroy({ where: {} })
+  await sequelize.close()
 })

@@ -29,6 +29,11 @@ User.init({
     type: DataTypes.STRING,
     allowNull: false,
   },
+  balance: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 20
+  }
 }, {
   sequelize,
   underscored: true,

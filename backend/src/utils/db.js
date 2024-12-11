@@ -4,8 +4,6 @@ const path = require('path')
 const { DATABASE_URL } = require('./config')
 
 const sequelize = new Sequelize(DATABASE_URL, )
-
-
 const migrationConf = {
   migrations: {
     // glob: 'migrations/*.js',

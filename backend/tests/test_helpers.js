@@ -1,6 +1,7 @@
 const { 
   User,
   Product,
+  IdempotencyKey,
 } = require('../src/models')
 
 const usersInDb = async () => {
@@ -11,6 +12,11 @@ const usersInDb = async () => {
 const productsInDb = async () => {
   const products = await Product.findAll()
   return products.map(p => p.toJSON())
+}
+
+const idempotencyKeysInDb = async () => {
+  const idempotencyKeys = await IdempotencyKey.findAll()
+  return idempotencyKeys.map(k => k.toJSON())
 }
 
 const getToken = async (api, user) => {
@@ -26,5 +32,6 @@ const getToken = async (api, user) => {
 module.exports = {
   usersInDb,
   productsInDb,
+  idempotencyKeysInDb,
   getToken,
 }

@@ -28,6 +28,11 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      balance: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        defaultValue: 20
+      },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,

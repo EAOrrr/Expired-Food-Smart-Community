@@ -1,7 +1,6 @@
 const User = require('./user')
 const Product = require('./product')
 const Order = require('./order')
-const OrderProduct = require('./orderProduct')
 const Cart = require('./cart')
 const IdempotencyKey = require('./idempotencyKey')
 
@@ -15,8 +14,11 @@ Product.belongsToMany(User, { through: Cart, foreignKey: 'ProductId', otherKey: 
 User.hasMany(Order, { foreignKey: 'BuyerId', as: 'Orders' });
 Order.belongsTo(User, { foreignKey: 'BuyerId', as: 'Buyer' });
 
-Order.belongsToMany(Product, { through: OrderProduct, foreignKey: 'OrderId', otherKey: 'ProductId', as: 'Products' });
-Product.belongsToMany(Order, { through: OrderProduct, foreignKey: 'ProductId', otherKey: 'OrderId', as: 'Orders' });
+User.hasMany(Order, { foreignKey: 'SellerId', as: 'SellerOrders' });
+Order.belongsTo(User, { foreignKey: 'SellerId', as: 'Seller' });
+
+Product.hasMany(Order, { foreignKey: 'ProductId', as: 'Orders' });
+Order.belongsTo(Product, { foreignKey: 'ProductId', as: 'Product' });
 
 User.hasMany(Cart, { foreignKey: 'UserId', as: 'Cart', onDelete: 'CASCADE' });
 Cart.belongsTo(User, { foreignKey: 'UserId', as: 'User' });
@@ -31,7 +33,6 @@ module.exports = {
   User,
   Product,
   Order,
-  OrderProduct,
   Cart,
   IdempotencyKey
 }

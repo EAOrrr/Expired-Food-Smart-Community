@@ -1,5 +1,4 @@
-
-const { DataTypes, UUIDV4 } = require('sequelize')
+const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = {
   up: async ({ context: queryInterface }) => {
@@ -8,7 +7,35 @@ module.exports = {
         type: DataTypes.UUID,
         primaryKey: true,
         allowNull: false,
-        defaultValue: UUIDV4()
+        defaultValue: UUIDV4(),
+      },
+      product_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: 'products',
+          key: 'product_id',
+        },
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      total: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      seller_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'user_id',
+        },
       },
       buyer_id: {
         type: DataTypes.UUID,
@@ -16,19 +43,15 @@ module.exports = {
         references: {
           model: 'users',
           key: 'user_id',
-        }
-      },
-      total_price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
+        },
       },
       status: {
-        type: DataTypes.ENUM('Pending', 'Shipped', 'Delivered'),
+        type: DataTypes.STRING,
+        validate: {
+          isIn: [['Pending', 'Delivering', 'Delivered', 'Cancelled']],
+        },
         allowNull: false,
-      },
-      shipping_info: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+        defaultValue: 'Pending',
       },
       created_at: {
         type: DataTypes.DATE,
@@ -37,11 +60,11 @@ module.exports = {
       updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
-      }
-    })
+      },
+    });
   },
 
   down: async ({ context: queryInterface }) => {
-    await queryInterface.dropTable('orders', { cascade: true })
-  }
-}
+    await queryInterface.dropTable('orders', { cascade: true });
+  },
+};

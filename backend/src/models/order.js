@@ -1,3 +1,4 @@
+
 const { Model, DataTypes, UUIDV4 } = require('sequelize');
 const { sequelize } = require('../utils/db');
 
@@ -10,6 +11,34 @@ Order.init({
     allowNull: false,
     defaultValue: UUIDV4()
   },
+  productId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'products', // name of the target model
+      key: 'product_id', // key in the target model
+    }
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  total: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  price: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  sellerId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users', // name of the target model
+      key: 'user_id', // key in the target model
+    }
+  },
   buyerId: {
     type: DataTypes.UUID,
     allowNull: false,
@@ -18,17 +47,14 @@ Order.init({
       key: 'user_id', // key in the target model
     }
   },
-  totalPrice: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
-  },
   status: {
-    type: DataTypes.ENUM('Pending', 'Shipped', 'Delivered'),
+    // type: DataTypes.ENUM('Pending', 'Delivering', 'Delivered', 'Cancelled'),
+    type: DataTypes.STRING,
+    validate: {
+      isIn: [['Pending', 'Delivering', 'Delivered', 'Cancelled']]
+    },
     allowNull: false,
-  },
-  shippingInfo: {
-    type: DataTypes.TEXT,
-    allowNull: true,
+    defaultValue: 'Pending'
   }
 }, {
   sequelize,

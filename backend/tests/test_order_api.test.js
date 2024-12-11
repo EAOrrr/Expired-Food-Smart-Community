@@ -356,7 +356,7 @@ describe.only('put /api/orders', () => {
       .expect(403)
   })
 
-  test('transition order status from pending to delivering', async () => {
+  test.only('transition order status from pending to delivering', async () => {
     const ordersAtStart = await helper.ordersInDb()
     await api
       .put(`/api/orders/${ordersAtStart[0].orderId}`)
@@ -374,7 +374,7 @@ describe.only('put /api/orders', () => {
       await Order.update({ status: 'Delivering' }, { where: {} })
     })
 
-    test('transition order status from delivering to delivered by buyer', async () => {
+    test.only('transition order status from delivering to delivered by buyer', async () => {
       const ordersAtStart = await helper.ordersInDb()
       const usersAtStart = await helper.usersInDb()
       const user1AtStart = usersAtStart.find(u => u.userId === userId1)
@@ -396,10 +396,7 @@ describe.only('put /api/orders', () => {
 
     })
 
-   
-  })
-
- 
+  }) 
 })
 
 after(async () => {

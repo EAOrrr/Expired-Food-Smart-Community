@@ -29,7 +29,7 @@ router.post('/', async(req, res) => {
   const user = await User.create({ ...req.body, passwordHash: passwordHash })
   const userForResponse = {
     username: user.username,
-    userId: user.id
+    userId: user.userId
   }
   res.status(201).json(userForResponse)
 })

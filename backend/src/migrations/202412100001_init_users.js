@@ -12,13 +12,15 @@ module.exports = {
       username: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
       },
       phone: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
           isNumeric: true
-        }
+        },
+        unique: true
       },
       password_hash: {
         type: DataTypes.STRING,

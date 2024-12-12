@@ -6,15 +6,6 @@ const { sequelize } = require('../utils/db')
 
 router.post('/', async(req, res) => {
   const { password, username } = req.body
-
-  const userWithName = await User.findOne({
-    where: {
-      username: username
-    }
-  })
-  if (userWithName) {
-    return res.status(400).json({ error: 'username already exists' })
-  }
   if (password.length < 6) {
     return res
       .status(400)

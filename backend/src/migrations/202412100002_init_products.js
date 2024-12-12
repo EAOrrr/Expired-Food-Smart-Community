@@ -29,11 +29,6 @@ module.exports = {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-      status: {
-        type: DataTypes.ENUM('Active', 'Inactive'),
-        defaultValue: 'Active',
-        allowNull: false,
-      },
       seller_id: {
         type: DataTypes.UUID,
         allowNull: false,

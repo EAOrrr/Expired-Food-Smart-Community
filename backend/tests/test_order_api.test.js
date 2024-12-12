@@ -10,21 +10,21 @@ const { connectToDatabase, sequelize } = require('../src/utils/db')
 const user = {
   username: 'testuser',
   password: 'password',
-  phone: "123456",
+  phone: "1234561",
   address: "testaddress",
 }
 
 const user1 = {
   username: 'testuser1',
   password: 'password',
-  phone: "123456",
+  phone: "1234562",
   address: "testaddress",
 }
 
 const user2 = {
   username: 'testuser2',
   password: 'password',
-  phone: "123456",
+  phone: "1234563",
   address: "testaddress",
 }
 

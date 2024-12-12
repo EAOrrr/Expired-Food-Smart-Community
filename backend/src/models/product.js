@@ -30,11 +30,6 @@ Product.init({
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  status: {
-    type: DataTypes.ENUM('Active', 'Inactive'),
-    defaultValue: 'Active',
-    allowNull: false,
-  },
   sellerId: {
     type: DataTypes.UUID,
     allowNull: false,

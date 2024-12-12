@@ -13,10 +13,12 @@ User.init({
   username: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   phone: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
     validate: {
       isNumeric: true
     }

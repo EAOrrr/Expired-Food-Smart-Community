@@ -48,7 +48,6 @@ Order.init({
     }
   },
   status: {
-    // type: DataTypes.ENUM('Pending', 'Delivering', 'Delivered', 'Cancelled'),
     type: DataTypes.STRING,
     validate: {
       isIn: [['Pending', 'Delivering', 'Delivered', 'Cancelled']]

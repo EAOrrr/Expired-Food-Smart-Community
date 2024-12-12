@@ -17,7 +17,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path='/' element={<ProtectedRoute></ProtectedRoute>} />
+      <Route path='/' element={<ProtectedRoute authorize={false}></ProtectedRoute>} />
       <Route path='/login' element={!user.loading && user.info ? <Navigate to='/'/> : <Login />} />
       <Route path='/sign-up' element={!user.loading && user.info ? <Navigate to='/'/> : <SignUp />} />
     </Routes>

@@ -25,8 +25,27 @@ const pages = [
 
 const NavigationBarLargeScreen = () => {
   const dispatch = useDispatch()
+  const user = useSelector(state => state.user)
 
+  const UserInfo = () => (
+    <Box sx={{display: 'flex'}}>
+      <Box sx={{mr: 1, flexDirection: 'row'}}>
+        <Link to='/profile' style={{ textDecoration: 'none' }}>
+            <Avatar>H</Avatar>
+        </Link>
+      </Box>
+      <Button onClick={() => dispatch(logout())}>
+        <Typography variant='inherit' textAlign='center' color='white'>退出登录</Typography>
+      </Button>
+    </Box>
+  )
 
+  const LoginButton = () => (
+    <Button component={Link} to='/login' sx={{ color: 'white' }}>
+      登录
+    </Button>
+  )
+  
   return (
     <AppBar position='static'>
       <Container maxWidth='xl'>
@@ -49,14 +68,9 @@ const NavigationBarLargeScreen = () => {
           <Box sx={{
             display: 'flex' 
           }}>
-            <Box sx={{mr: 1}}>
-                <Link to='/profile' style={{ textDecoration: 'none' }}>
-                    <Avatar>H</Avatar>
-                </Link>
-            </Box>
-            <Button onClick={() => dispatch(logout())}>
-              <Typography variant='inherit' textAlign='center' color='white'>退出登录</Typography>
-            </Button>
+            {user.info
+            ? <UserInfo />
+            : <LoginButton />}
           </Box>
         </Toolbar>
       </Container>

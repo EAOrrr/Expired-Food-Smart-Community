@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import Login from "./components/Login"
 import SignUp from "./components/Signup"
 import { initializeUser } from "./reducers/userReducer"
+import NotificationDisplay from "./components/NotificationDisplay"
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
       <Route path='/' element={<ProtectedRoute authorize={false}></ProtectedRoute>} />
       <Route path='/login' element={!user.loading && user.info ? <Navigate to='/'/> : <Login />} />
       <Route path='/sign-up' element={!user.loading && user.info ? <Navigate to='/'/> : <SignUp />} />
+      <Route path='/test' element={<ProtectedRoute><NotificationDisplay /></ProtectedRoute>} />
     </Routes>
   )
 }

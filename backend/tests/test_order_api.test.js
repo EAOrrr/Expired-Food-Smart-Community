@@ -65,10 +65,10 @@ beforeEach(async () => {
   userToken1 = await helper.getToken(api, user1)
   userToken2 = await helper.getToken(api, user2)
 
-  User.update({ balance: 1000 }, { where: { userId } })
+  await User.update({ balance: 1000 }, { where: { userId } })
 })
 
-describe('post /api/orders/product', () => {
+describe.only('post /api/orders/product', () => {
   test('buy a product', async () => {
     const productsAtStart = await helper.productsInDb()
     const ordersAtStart = await helper.ordersInDb()
@@ -134,7 +134,7 @@ describe('post /api/orders/product', () => {
       .expect('Content-Type', /application\/json/)
   })
 
-  test('buy many products', async () => {
+  test.only('buy many products', async () => {
     const productsAtStart = await helper.productsInDb()
     const ordersAtStart = await helper.ordersInDb()
     const usersAtStart = await helper.usersInDb()
@@ -162,8 +162,10 @@ describe('post /api/orders/product', () => {
     assert.strictEqual(productsAtEnd.length, productsAtStart.length)
     assert.strictEqual(ordersAtEnd.length, ordersAtStart.length + 1)
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    const userBeforeBuy = usersAtStart.find(u => u.userId === userId)
     const userAfterBuy = usersAtEnd.find(u => u.userId === userId)
-    assert.strictEqual(parseFloat(userAfterBuy.balance), parseFloat(usersAtStart.find(u => u.userId === userId).balance - products.price * 2))
+    console.log(userBeforeBuy.balance, products.price * 2, userAfterBuy.balance)
+    assert.strictEqual(parseFloat(userAfterBuy.balance), parseFloat(userBeforeBuy.balance) - products.price * 2)
   })
 })
 
@@ -275,7 +277,7 @@ describe('post /api/orders/cart', () => {
 
 })
 
-describe.only('put /api/orders', () => {
+describe('put /api/orders', () => {
   let product0
   beforeEach(async () => {
     // create a pending order
@@ -356,7 +358,7 @@ describe.only('put /api/orders', () => {
       .expect(403)
   })
 
-  test.only('transition order status from pending to delivering', async () => {
+  test('transition order status from pending to delivering', async () => {
     const ordersAtStart = await helper.ordersInDb()
     await api
       .put(`/api/orders/${ordersAtStart[0].orderId}`)
@@ -369,12 +371,12 @@ describe.only('put /api/orders', () => {
     assert.strictEqual(orderAfterTransition.status, 'Delivering')
   })
 
-  describe.only('transition order status from delivering to delivered', () => {
+  describe('transition order status from delivering to delivered', () => {
     beforeEach(async () => {
       await Order.update({ status: 'Delivering' }, { where: {} })
     })
 
-    test.only('transition order status from delivering to delivered by buyer', async () => {
+    test('transition order status from delivering to delivered by buyer', async () => {
       const ordersAtStart = await helper.ordersInDb()
       const usersAtStart = await helper.usersInDb()
       const user1AtStart = usersAtStart.find(u => u.userId === userId1)

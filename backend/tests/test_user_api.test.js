@@ -106,5 +106,6 @@ describe('user info management', () => {
 })
 
 after(async () => {
+  await User.destroy({ where: {}})
   await sequelize.close()
 })

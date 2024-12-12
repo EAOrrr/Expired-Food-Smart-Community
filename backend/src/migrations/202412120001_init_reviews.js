@@ -2,34 +2,26 @@ const { DataTypes, UUIDV4 } = require('sequelize');
 
 module.exports = {
   up: async ({ context: queryInterface }) => {
-    await queryInterface.createTable('orders', {
-      order_id: {
+    await queryInterface.createTable('reviews', {
+      review_id: {
         type: DataTypes.UUID,
         primaryKey: true,
         allowNull: false,
         defaultValue: UUIDV4(),
       },
-      product_id: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        references: {
-          model: 'products',
-          key: 'product_id',
-        },
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
       },
-      quantity: {
+      rating: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        validate: {
+          min: 1,
+          max: 5,
+        },
       },
-      total: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-      },
-      price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-      },
-      seller_id: {
+      reviewer_id: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
@@ -37,7 +29,7 @@ module.exports = {
           key: 'user_id',
         },
       },
-      buyer_id: {
+      reviewed_id: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
@@ -45,13 +37,21 @@ module.exports = {
           key: 'user_id',
         },
       },
-      status: {
+      type: {
         type: DataTypes.STRING,
         validate: {
-          isIn: [['Pending', 'Delivering', 'Delivered', 'Cancelled']],
+          isIn: [['buyerToSeller', 'sellerToBuyer']],
         },
         allowNull: false,
-        defaultValue: 'Pending',
+      },
+      order_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: 'orders',
+          key: 'order_id',
+        },
+        unique: true,
       },
       created_at: {
         type: DataTypes.DATE,
@@ -65,6 +65,6 @@ module.exports = {
   },
 
   down: async ({ context: queryInterface }) => {
-    await queryInterface.dropTable('orders', { cascade: true });
-  },
+    await queryInterface.dropTable('reviews', { cascade: true });
+  }
 };

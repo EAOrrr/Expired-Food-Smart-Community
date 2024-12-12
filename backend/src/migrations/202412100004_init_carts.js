@@ -20,7 +20,7 @@ module.exports = {
       },
       product_id: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: 'products',
           key: 'product_id',

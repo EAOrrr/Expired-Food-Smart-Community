@@ -20,7 +20,7 @@ Cart.init({
   },
   productId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'products', // name of the target model
       key: 'product_id', // key in the target model

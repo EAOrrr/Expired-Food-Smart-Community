@@ -5,15 +5,23 @@ const { Cart, Product, User } = require('../models');
 router.get('/me', userExtractor, async (req, res) => {
   const user = req.user
   // const products = await user.getCartProducts()
-  const carts = await Cart.findAll({
-    where: {
-      userId: user.userId
-    },
+  // const carts = await Cart.findAll({
+  //   where: {
+  //     userId: user.userId
+  //   },
+  //   include: {
+  //     model: Product,
+  //     as: 'Product'
+  //   }
+  // })
+  // res.json(carts)
+  const carts = await user.getCarts({
     include: {
       model: Product,
       as: 'Product'
     }
   })
+
   res.json(carts)
 })
 

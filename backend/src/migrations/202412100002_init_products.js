@@ -27,7 +27,7 @@ module.exports = {
       },
       description: {
         type: DataTypes.TEXT,
-        allowNull: true,
+        allowNull: false,
       },
       seller_id: {
         type: DataTypes.UUID,

@@ -28,7 +28,7 @@ Product.init({
   },
   description: {
     type: DataTypes.TEXT,
-    allowNull: true,
+    allowNull: false,
   },
   sellerId: {
     type: DataTypes.UUID,

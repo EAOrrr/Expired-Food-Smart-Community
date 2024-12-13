@@ -17,7 +17,7 @@ import { logout } from '../reducers/userReducer'
 const pages = [
   // { label: '首页', href: '/' },
   { label: '商品查看', href: '/shopping' },
-  { label: '我的购物车', href: '/cart' },
+  { label: '我的购物车', href: '/carts' },
   { label: '我的订单', href: '/orders' },
   { label: '其他功能', href: '/other' }
 ]

@@ -53,7 +53,7 @@ const Login = () => {
       dispatch(createNotification('登录成功', 'success'))
       navigate('/')
     }
-    catch (exception) {
+    catch (_error) {
       dispatch(createNotification('用户名或密码错误', 'error'))
     }
   }

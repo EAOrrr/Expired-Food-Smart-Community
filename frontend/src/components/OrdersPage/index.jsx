@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Box, Typography, List, ListItem, ListItemText, Divider, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Rating } from '@mui/material'
-import ordersService from '../services/orders'
-import reviewService from '../services/review'
+import ordersService from '../../services/orders'
+import reviewService from '../../services/review'
+import OrderCard from './OrderCard'
 
 const Order = () => {
     const user = useSelector(state => state.user)
     const [buyOrders, setBuyOrders] = useState([])
     const [sellOrders, setSellOrders] = useState([])
-    const [open, setOpen] = useState(false)
     const [selectedOrder, setSelectedOrder] = useState(null)
     const [reviewContent, setReviewContent] = useState('')
     const [reviewRating, setReviewRating] = useState(0)
+    const [open, setOpen] = useState(false)
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -29,6 +30,7 @@ const Order = () => {
         setSelectedOrder(order)
         setOpen(true)
     }
+
 
     const handleClose = () => {
         setOpen(false)
@@ -48,6 +50,10 @@ const Order = () => {
             handleClose()
         }
     }
+    console.log(buyOrders)
+    console.log(sellOrders)
+    console.log('sellproduct', sellOrders && sellOrders.map(order => order.Product.name))
+    // return (<></>)
 
     return (
         <Box sx={{ p: 2 }}>
@@ -58,13 +64,7 @@ const Order = () => {
             ) : (
                 <List>
                     {buyOrders.map(order => (
-                        <React.Fragment key={order.id}>
-                            <ListItem>
-                                <ListItemText primary={`商品: ${order.Products.name}`} secondary={`数量: ${order.quantity} 总价: ${order.total} 状态: ${order.status}`} />
-                                <Button variant="outlined" onClick={() => handleClickOpen(order)}>评价</Button>
-                            </ListItem>
-                            <Divider />
-                        </React.Fragment>
+                            <OrderCard key={order.id} order={order} />
                     ))}
                 </List>
             )}
@@ -74,44 +74,10 @@ const Order = () => {
             ) : (
                 <List>
                     {sellOrders.map(order => (
-                        <React.Fragment key={order.id}>
-                            <ListItem>
-                                <ListItemText primary={`商品: ${order.Product.name}`} secondary={`数量: ${order.quantity} 总价: ${order.total} 状态: ${order.status}`} />
-                                <Button variant="outlined" onClick={() => handleClickOpen(order)}>评价</Button>
-                            </ListItem>
-                            <Divider />
-                        </React.Fragment>
+                        <OrderCard key={order.id} order={order} />
                     ))}
                 </List>
             )}
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>评价订单</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        请为订单 {selectedOrder?.Products.name} 进行评价。
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="评价内容"
-                        fullWidth
-                        variant="standard"
-                        value={reviewContent}
-                        onChange={(e) => setReviewContent(e.target.value)}
-                    />
-                    <Rating
-                        name="rating"
-                        value={reviewRating}
-                        onChange={(event, newValue) => {
-                            setReviewRating(newValue)
-                        }}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>取消</Button>
-                    <Button onClick={handleSubmitReview}>提交</Button>
-                </DialogActions>
-            </Dialog>
         </Box>
     )
 }

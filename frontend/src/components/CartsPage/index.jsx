@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Typography, Grid, Card, CardContent, Button, Checkbox } from '@mui/material'
 import
- cartsService from '../services/carts'
-import { createNotification } from '../reducers/notificationReducer'
+ cartsService from '../../services/carts'
+import { createNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
-import NavigationBarLargeScreen from './NavigationBar'
 
 const Cart = () => {
   const [cart, setCart] = useState([])
@@ -45,7 +44,6 @@ const Cart = () => {
 
   return (
     <>
-      <NavigationBarLargeScreen />
       <Box sx={{ p: 3 }}>
         <Typography variant='h4' gutterBottom>
           购物车

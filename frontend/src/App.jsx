@@ -7,8 +7,8 @@ import SignUp from "./components/Signup"
 import { initializeUser } from "./reducers/userReducer"
 import NotificationDisplay from "./components/NotificationDisplay"
 import ShoppingPage from './components/ShoppingPage'
-import Cart from './components/Cart'
-import Order from './components/Order'
+import CartsPage from './components/CartsPage'
+import OrdersPage from './components/OrdersPage'
 
 function App() {
   const dispatch = useDispatch()
@@ -20,13 +20,15 @@ function App() {
 
   return (
     <Routes>
-      <Route path='/' element={<ProtectedRoute authorize={false}></ProtectedRoute>} />
+      <Route path='/' element={<ProtectedRoute authorize={false}><ShoppingPage /></ProtectedRoute>} />
       <Route path='/login' element={!user.loading && user.info ? <Navigate to='/'/> : <Login />} />
       <Route path='/sign-up' element={!user.loading && user.info ? <Navigate to='/'/> : <SignUp />} />
-      <Route path='/test' element={<ProtectedRoute><NotificationDisplay /></ProtectedRoute>} />
-      <Route path='/shopping' element={<ShoppingPage />} />
-      <Route path='/cart' element={<Cart />} />
-      <Route path='/orders' element={<ProtectedRoute><Order /></ProtectedRoute>} />
+      <Route path='/test' element={<ProtectedRoute> <NotificationDisplay /> </ProtectedRoute>} />
+      {/* <Route path='/shopping' element={<ProtectedRoute> <ShoppingPage /> </ProtectedRoute>} /> */}
+      <Route path= '/shopping/:id' element={<ProtectedRoute>specific product</ProtectedRoute>} />
+      <Route path='/carts' element={<ProtectedRoute><CartsPage /></ProtectedRoute>} />
+      <Route path='/orders' element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+      <Route path='*' element={<Navigate to='/' />} />
     </Routes>
   )
 }

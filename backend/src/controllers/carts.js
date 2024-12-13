@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { userExtractor } = require('../utils/middleware');
 const { Cart, Product, User } = require('../models');
 
-router.get('/me', userExtractor, async (req, res) => {
+router.get('/', userExtractor, async (req, res) => {
   const user = req.user
   // const products = await user.getCartProducts()
   // const carts = await Cart.findAll({

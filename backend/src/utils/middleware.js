@@ -19,11 +19,10 @@ const errorHandler = (error, req, res, next) => {
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'SequelizeUniqueConstraintError') {
-    const errors = error.errors.map(err => ({
-      field: err.path,
-      message: `${err.path} must be unique`
-    }))
-    return res.status(400).send({ errors })
+    const errorMessage = error.errors
+    .map(err => `${err.path} must be unique`)
+    .join(', ') 
+    return res.status(400).send({ error: errorMessage })
   } else if (error.name === 'SequelizeValidationError') {
     console.log('error')
     return res.status(400).send({ error: error.message })

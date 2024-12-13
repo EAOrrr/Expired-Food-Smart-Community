@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "migration:down": "node src/utils/rollback.js",
-    "test": "node --test"
+    "test": "node --test",
+    "init": "node src/utils/initialize.js"
   },
   "keywords": [],
   "author": "",

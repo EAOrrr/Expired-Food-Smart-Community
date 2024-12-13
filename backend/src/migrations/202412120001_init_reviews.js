@@ -51,7 +51,7 @@ module.exports = {
           model: 'orders',
           key: 'order_id',
         },
-        unique: true,
+        // unique: true,
       },
       created_at: {
         type: DataTypes.DATE,

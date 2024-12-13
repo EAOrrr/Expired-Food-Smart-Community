@@ -53,12 +53,18 @@ Review.init({
       model: 'orders',
       key: 'order_id',
     },
-    unique: true, // Ensure each order can only be reviewed once
+    // unique: true, // Ensure each order can only be reviewed once
   },
 }, {
   sequelize,
   underscored: true,
   modelName: 'review',
+  indexes: [
+    {
+      unique: true,
+      fields: ['orderId', 'type'],
+    },
+  ],
 });
 
 

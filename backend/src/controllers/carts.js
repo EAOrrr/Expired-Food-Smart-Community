@@ -25,9 +25,9 @@ router.get('/me', userExtractor, async (req, res) => {
   res.json(carts)
 })
 
-router.post('/:id', userExtractor, async (req, res) => {
+router.post('/:productid', userExtractor, async (req, res) => {
   const user = req.user
-  const productId = req.params.id
+  const productId = req.params.productid
   const { quantity } = req.body
   const product = await Product.findByPk(productId)
   if (!product) {
@@ -50,38 +50,34 @@ router.post('/:id', userExtractor, async (req, res) => {
   res.status(201).json(newCart)
 })
 
-router.put('/:id', userExtractor, async (req, res) => {
+router.put('/:cartid', userExtractor, async (req, res) => {
   const user = req.user
-  const productId = req.params.id
+  const cartId = req.params.cartid
   const { quantity } = req.body
   if (!quantity || quantity < 1) {
     return res.status(400).json({ error: 'quantity must be at least 1' })
   }
-  const cart = await Cart.findOne({
-    where: {
-      userId: user.userId,
-      productId: productId
-    }
-  })
+  const cart = await Cart.findByPk(cartId)
   if (!cart) {
     return res.status(404).json({ error: 'product not found in cart' })
+  }
+  if (cart.userId !== user.userId) {
+    return res.status(403).json({ error: 'no permission' })
   }
   cart.quantity = quantity
   await cart.save()
   res.json(cart)
 })
 
-router.delete('/:id', userExtractor, async (req, res) => {
+router.delete('/:cartid', userExtractor, async (req, res) => {
   const user = req.user
-  const productId = req.params.id
-  const cart = await Cart.findOne({
-    where: {
-      userId: user.userId,
-      productId: productId
-    }
-  })
+  const cartId = req.params.cartid
+  const cart = await Cart.findByPk(cartId)
   if (!cart) {
     return res.status(404).json({ error: 'product not found in cart' })
+  }
+  if (cart.userId !== user.userId) {
+    return res.status(403).json({ error: 'no permission' })
   }
   await cart.destroy()
   res.status(204).end()

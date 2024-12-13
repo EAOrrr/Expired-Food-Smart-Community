@@ -95,7 +95,7 @@ describe.only('test cart api', () => {
     const cartToUpdate = cartsAtStart.find(c => c.productId === product.productId)
 
     const response = await api
-      .put(`/api/carts/${product.productId}`)
+      .put(`/api/carts/${cartToUpdate.cartId}`)
       .send({ quantity: 1 })
       .set('Authorization', `bearer ${token}`)
       .expect(200)
@@ -111,7 +111,7 @@ describe.only('test cart api', () => {
     const cartToDelete = cartsAtStart.find(c => c.productId === product.productId)
 
     await api
-      .delete(`/api/carts/${product.productId}`)
+      .delete(`/api/carts/${cartToDelete.cartId}`)
       .set('Authorization', `bearer ${token}`)
       .expect(204)
     

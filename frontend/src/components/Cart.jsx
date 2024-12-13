@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Typography, Grid, Card, CardContent, Button, Checkbox } from '@mui/material'
-import cartsService from '../services/carts'
+import
+ cartsService from '../services/carts'
 import { createNotification } from '../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 import NavigationBarLargeScreen from './NavigationBar'

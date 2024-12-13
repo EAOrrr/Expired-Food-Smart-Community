@@ -7,10 +7,12 @@ import { useState } from "react";
 const NotificationDisplay = () => {
   const notification = useField('notification')
   const [severity, setSeverity] = useState('success')
+  // useDispatch hook
   const dispatch = useDispatch()
 
   const handleClick = () => {
     console.log(notification)
+    // 发布通知
     dispatch(createNotification(notification.value, severity))
   }
 

@@ -6,11 +6,17 @@ const upload = multer();
 
 router.get('/', async (req, res) => {
   const products = await Product.findAll({
-    include: {
+    include: [{
       model: User,
       as: 'Seller',
       attributes: ['username', 'phone', 'address']
     },
+    {
+      model: Image,
+      as: 'Images',
+      attributes: ['imageId'],
+      where: { isCover: true }
+    }],
     attributes: {
       exclude: ['sellerId']
     }
@@ -28,7 +34,7 @@ router.post('/', userExtractor, upload.fields([
     ...body,
     sellerId: req.user.userId
   });
-  
+
   if (files) {
     if (files.cover) {
       const coverFile = files.cover[0];

@@ -6,7 +6,7 @@ router.get('/:id', async (req, res) => {
   const image = await Image.findByPk(id)
   if (image) {
     res.contentType(image.mimeType)
-    res.send(image.data)
+    res.send(Buffer.from(image.data))
   } else {
     res.status(404).end()
   }

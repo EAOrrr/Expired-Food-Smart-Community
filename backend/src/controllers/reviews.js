@@ -26,8 +26,8 @@ router.post('/', userExtractor, async (req, res) => {
   res.status(201).json(review)
 })
 
-router.delete('/', userExtractor, async (req, res) => {
-  const { reviewId } = req.body
+router.delete('/:reviewId', userExtractor, async (req, res) => {
+  const reviewId = req.params.reviewId
   const reviewerId = req.user.userId
 
   const review = await Review.findOne({ where: { reviewId, reviewerId } })

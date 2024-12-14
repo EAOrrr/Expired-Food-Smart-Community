@@ -7,11 +7,13 @@ const getAll = async () => {
   return response.data
 }
 
+// newObject: { quantity: Number }
 const create = async (productId, newObject) => {
   const response = await axios.post(`${baseUrl}/${productId}`, newObject)
   return response.data
 }
 
+// newObject: { quantity: Number }
 const update = async (cartId, newObject) => {
   const response = await axios.put(`${baseUrl}/${cartId}`, newObject)
   return response.data

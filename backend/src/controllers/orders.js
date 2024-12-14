@@ -222,8 +222,8 @@ router.post('/cart', userExtractor, async (req, res) => {
   // 4. 买家取消订单后，订单状态为 Cancelled，把钱退回买家账户，买家或卖家操作
   // 状态变更只能由买家或卖家操作，其他用户无权操作
   // 状态转换如下： 1 --> 2 --> 3
-  //               |     |     |
-  //               4     4     4
+  //               |     |     
+  //               4     4     
   // 使用事务保证状态变更的原子性
 
 router.put('/:id', userExtractor, async (req, res) => {

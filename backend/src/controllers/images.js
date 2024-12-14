@@ -12,4 +12,10 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params
+  await Image.destroy({ where: { imageId: id } })
+  res.status(204).end()
+})
+
 module.exports = router

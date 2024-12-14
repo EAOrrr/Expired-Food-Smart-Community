@@ -15,14 +15,53 @@ const getOne = async (id) => {
 }
 
 // Returns the created product
+// newObject is a FormData object
+// with the following fields:
+// name, price, description, stock, expiryDate
+// and cover: a single image file
+// and images: an array of image files (no more than 8)
+/*
+ * {
+  *   name: String,
+  *  price: Number,
+  * description: String,
+  * stock: Number,
+  * expiryDate: Date,
+  * cover: File,
+  * images: [File]
+  * }
+  */
+
 const create = async (newObject) => {
-  const response = await axios.post(baseUrl, newObject);
+  const config = {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }
+  const response = await axios.post(baseUrl, newObject, config);
   return response.data;
 }
 
 // Returns the updated product
+// newObject is a FormData object
+// with the following fields:
+// name, price, description, stock, expiryDate
+// and cover: a single image file
+// and images: an array of image files (no more than 8)
+/*
+ * {
+  *   name: String,
+  *  price: Number,
+  * description: String,
+  * stock: Number,
+  * expiryDate: Date,
+  * cover: File,
+  * images: [File]
+  * }
+  */
 const update = async (id, newObject) => {
-  const response = await axios.put(`${baseUrl}/${id}`, newObject);
+  const config = {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }
+  const response = await axios.put(`${baseUrl}/${id}`, newObject, config);
   return response.data;
 }
 

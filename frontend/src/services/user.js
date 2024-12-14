@@ -1,15 +1,17 @@
 import axios from 'axios'
-import storage from '../services/storage'
 
 const baseUrl = '/api/users'
 
-
+// 创建新用户
+// newObject: { username: String, password: String, phone: String, address: String }
 const create = async (newObject) => {
   const response = await axios.post(baseUrl, newObject)
   return response.data
 }
 
-/* query 格式
+/* 
+获取自己的信息
+query 格式
 { 
   query1: value1,
   query2: value2
@@ -24,21 +26,37 @@ const getInfo = async (query) => {
   return response.data
 }
 
-const update = async (newObject) => {
-  const response = await axios.put(`${baseUrl}/me`, newObject)
-  return response.data
-}
-
+// 获取其他用户信息
 const getUserInfo = async (userId) => {
   const response = await axios.get(`${baseUrl}/${userId}`)
   return response.data
 }
 
+// 更新自己的信息 （balance 除外）
+// newObject: { username: String, password: String, phone: String, address: String }
+const update = async (newObject) => {
+  const response = await axios.put(`${baseUrl}/me`, newObject)
+  return response.data
+}
+
+// 存钱 amount: Number
+const deposit = async (amount) => {
+  const response = await axios.post(`${baseUrl}/me/deposit`, { amount })
+  return response.data
+}
+
+// 账单
+const getBills = async () => {
+  const response = await axios.get(`${baseUrl}/me/bills`)
+  return response.data
+}
 
 
 export default {
   getInfo,
   create,
   update,
-  getUserInfo
+  getUserInfo,
+  deposit,
+  getBills,
 }

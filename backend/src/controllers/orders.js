@@ -11,7 +11,7 @@ router.get('/buy', userExtractor, async (req, res) => {
     },
     include: {
       model: Product,
-      as: 'Products',
+      as: 'Product',
     }
   })
   res.json(orders)

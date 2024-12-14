@@ -16,6 +16,7 @@ const carts = require('../../data/carts')
 const orders = require('../../data/orders')
 const reviews = require('../../data/reviews')
 const images = require('../../data/images')
+const bills = require('../../data/bills')
 
 const bcrypt = require('bcrypt')
 const fs = require('fs');
@@ -49,6 +50,7 @@ const initialize = async () => {
   await Cart.bulkCreate(carts);
   await Order.bulkCreate(orders);
   await Review.bulkCreate(reviews);
+  await Bill.bulkCreate(bills);
 
   sequelize.close()
 }

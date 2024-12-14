@@ -30,7 +30,7 @@ const data = [
     price: 30.00,
     sellerId: users[1].userId,
     buyerId: users[0].userId,
-    status: 'Pending'
+    status: 'Cancelled'
   }
 ]
 

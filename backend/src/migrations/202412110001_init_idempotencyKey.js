@@ -3,10 +3,15 @@ const { DataTypes } = require('sequelize')
 module.exports = {
   up: async ({ context: queryInterface}) => {
     await queryInterface.createTable('idempotency_keys', {
+      idempotency_key_id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4(),
+      },
       key: {
         type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: true,
       },
       user_id: {
         type: DataTypes.UUID,

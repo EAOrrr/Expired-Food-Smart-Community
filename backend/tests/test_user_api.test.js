@@ -93,7 +93,6 @@ describe('user info management', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .expect('Content-Type', /application\/json/)
-    console.log(response.body)
     assert.strictEqual(parseFloat(response.body.balance), 120 + parseFloat(userBalance))
     const usersAtEnd = await helper.usersInDb()
     const userBalanceAtEnd = usersAtEnd.filter(u => u.username === user.username)[0].balance
@@ -101,6 +100,76 @@ describe('user info management', () => {
     const idempotencyKeysAtEnd = await helper.idempotencyKeysInDb()
     assert.strictEqual(idempotencyKeysAtEnd.length, idempotencyKeysAtStart.length + 1)
     
+  })
+
+})
+
+describe('test user balance', () => {
+  let userToken, userId
+  const user = {
+    username: 'testuser',
+    password: 'password',
+    phone: '123456',
+    address: 'testaddress'
+  }
+
+  beforeEach(async () => {
+    const response = await api
+      .post('/api/users')
+      .send(user)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+    userId = response.body.userId
+    userToken = await helper.getToken(api, user)
+  })
+
+  test('deposit', async () => {
+    const usersAtStart = await helper.usersInDb()
+    const userBalanceAtStart = usersAtStart.find(u => u.username === user.username).balance
+    const billsAtStart = await helper.billsInDb()
+
+    const idempotencyKey = 'testdepositid'
+    const response = await api
+      .post('/api/users/me/deposit')
+      .send({ amount: 120, idempotencyKey })
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+    assert.strictEqual(parseFloat(response.body.balance), 120 + parseFloat(userBalanceAtStart))
+
+    const usersAtEnd = await helper.usersInDb()
+    const userBalanceAtEnd = usersAtEnd.find(u => u.username === user.username).balance
+    assert.strictEqual(parseFloat(userBalanceAtEnd), 120 + parseFloat(userBalanceAtStart))
+    const billsAtEnd = await helper.billsInDb()
+    assert.strictEqual(billsAtEnd.length, billsAtStart.length + 1)
+    const depositBill = billsAtEnd.find(b => b.userId === userId && b.operation === 'deposit')
+    assert(depositBill)
+    assert.strictEqual(parseFloat(depositBill.amount), 120)
+  })
+
+  test('deposit too many requests', async () => {
+    const usersAtStart = await helper.usersInDb()
+    const userBalanceAtStart = usersAtStart.find(u => u.username === user.username).balance
+    const idempotencyKey1 = 'testdepositid1vhj'
+    const idempotencyKey2 = 'testdepositid2gyui'
+
+    await api
+      .post('/api/users/me/deposit')
+      .send({ amount: 120, idempotencyKey: idempotencyKey1 })
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+    
+    const response = await api
+      .post('/api/users/me/deposit')
+      .send({ amount: 120, idempotencyKey: idempotencyKey2 })
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(429)
+      .expect('Content-Type', /application\/json/)
+    assert.strictEqual(response.body.error, 'too many requests')
+    const usersAtEnd = await helper.usersInDb()
+    const userBalanceAtEnd = usersAtEnd.find(u => u.username === user.username).balance
+    assert.strictEqual(parseFloat(userBalanceAtEnd), 120 + parseFloat(userBalanceAtStart))
   })
 
 })

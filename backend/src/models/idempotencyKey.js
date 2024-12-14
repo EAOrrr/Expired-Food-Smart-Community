@@ -4,9 +4,14 @@ const { sequelize } = require('../utils/db');
 class IdempotencyKey extends Model {}
 
 IdempotencyKey.init({
+  idempotencyKeyId: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: DataTypes.UUIDV4,
+  },
   key: {
     type: DataTypes.STRING,
-    primaryKey: true,
     allowNull: false,
   },
   userId: {
@@ -30,7 +35,13 @@ IdempotencyKey.init({
 }, {
   sequelize,
   underscored: true,
-  modelName: 'idempotency_key'
+  modelName: 'idempotency_key',
+  indexes: [
+    {
+      unique: true,
+      fields: ['key', 'operation', 'user_id'],
+    }
+  ]
 });
 
 module.exports = IdempotencyKey;

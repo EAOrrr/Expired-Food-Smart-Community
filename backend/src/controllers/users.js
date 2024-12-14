@@ -58,7 +58,7 @@ router.get('/me', userExtractor, async (req, res) => {
 router.get('/:userid', userExtractor, async (req, res) => {
   const { userid } = req.params
   const requestedUser = await User.findByPk(userid, {
-    attributes: { exclude: ['passwordHash', 'address'] },
+    attributes: { exclude: ['passwordHash', 'address', 'balance'] },
     include: [
       {
         model: 'review',
@@ -90,6 +90,8 @@ router.put('/me', userExtractor, async (req, res) => {
     const passwordHash = await bcrypt.hash(body.password, saltRounds)
     updatedUser.passwordHash = passwordHash
   }
+  // 移除balance 
+  delete updatedUser.balance
   await user.update(updatedUser)
   res.json(user)
 })
@@ -106,33 +108,60 @@ router.post('/me/deposit', userExtractor, async (req, res) => {
   if (!idempotencyKey) {
     return res.status(400).json({ error: 'idempotency-key is required' })
   }
+  console.log(idempotencyKey)
   // await sequelize.transaction(async (t) => {
     const t = await sequelize.transaction()
-    console.log('here')
     try {
-      const existingKey = await user.getIdempotencyKeys(idempotencyKey, {
-        where: { operation: 'deposit' },
+      const existingKey = await user.getIdempotencyKeys({
+        where: { operation: 'deposit', key: idempotencyKey },
         transaction: t,
         lock: t.LOCK_UPDATE
       })
       if (existingKey.length > 0) {
-        return res.status(200).json({ balance: user.balance })
+        console.log('idempotency key exists')
+        console.log('')
+        await t.rollback()
+        return res.status(429).json({ error: 'idempotency-key exists' })
       }
-      console.log('herer2')
+      if (user.lastDepositTime) {
+        console.log('\n\n\n')
+        console.log(new Date() - user.lastDepositTime)
+        console.log('\n\n\n')
+      }
+      if (user.lastDepositTime && (new Date() - user.lastDepositTime) / 1000 < 15) {
+        await t.rollback()
+        return res.status(429).json({ error: 'too many requests' })
+      }
+      user.lastDepositTime = new Date()
+      await user.save({ transaction : t })
+      console.log(user.toJSON())
+      // 增加用户余额
+      await user.increment('balance', { by: amount, transaction: t })
+      // 创建deposit账单
+      await user.createBill({
+        amount: amount,
+        operation: 'deposit'
+      }, { transaction: t })
       await user.createIdempotencyKey({
         key: idempotencyKey,
         operation: 'deposit',
         userId: user.userId
       }, { transaction: t })
-      await user.increment('balance', { by: amount, transaction: t })
       const updatedUser = await User.findByPk(user.userId, { transaction: t })
       await t.commit()
-      console.log(updatedUser)
       res.status(200).json({ balance: updatedUser.balance })
     } catch (error) {
       if (!t.finished) await t.rollback()
       throw error
     }
+})
+
+router.get('/me/bills', userExtractor, async (req, res) => {
+  const user = req.user
+  const bills = await user.getBills({
+    order: [['createdAt', 'DESC']]
+  })
+  res.status(200).json(bills)
 })
 
 module.exports = router

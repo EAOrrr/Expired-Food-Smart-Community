@@ -46,10 +46,15 @@ module.exports = {
       },
     });
 
-
+    await queryInterface.addColumn('users', 'last_deposit_time', {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+    });
   },
 
   down: async ({ context: queryInterface }) => {
     await queryInterface.dropTable('bills', { cascade: true });
+    await queryInterface.removeColumn('users', 'last_deposit_time');
   }
 };

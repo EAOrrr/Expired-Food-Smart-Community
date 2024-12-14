@@ -35,6 +35,11 @@ User.init({
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
     defaultValue: 20
+  },
+  lastDepositTime: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null,
   }
 }, {
   sequelize,

@@ -43,7 +43,6 @@ Review.belongsTo(Order, { foreignKey: 'orderId', as: 'Order', onDelete: 'CASCADE
 Product.hasMany(Image, { foreignKey: 'productId', as: 'Images', onDelete: 'CASCADE' });
 Image.belongsTo(Product, { foreignKey: 'productId', as: 'Product', onDelete: 'CASCADE' });
 
-Product.belongsTo(Image, { foreignKey: 'coverImageId', as: 'CoverImage', onDelete: 'SET NULL' });
 
 // Hook to ensure order status is 'Delivered' before creating a review
 Review.beforeCreate(async (review, options) => {
@@ -65,7 +64,7 @@ Order.beforeUpdate(async (order, options) => {
   const validTransitions = {
     Pending: ['Delivering', 'Cancelled'],
     Delivering: ['Delivered', 'Cancelled'],
-    Delivered: ['Cancelled'],
+    Delivered: [],
   };
   const currentStatus = order._previousDataValues.status;
   const newStatus = order.status;

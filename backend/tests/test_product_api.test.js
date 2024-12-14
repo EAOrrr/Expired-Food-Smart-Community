@@ -48,7 +48,7 @@ describe.only('test product api', () => {
     productId = response.body.productId
   })
 
-  test('create a product', async () => {
+  test.only('create a product', async () => {
     const productsAtStart = await helper.productsInDb()
     const product = {
       name: 'testproduct1',
@@ -92,7 +92,7 @@ describe.only('test product api', () => {
     assert.strictEqual(productsAtEnd.length, productsAtStart.length - 1)
   })
 
-  test.only('create a product with images', async () => {
+  test('create a product with images', async () => {
     const productsAtStart = await helper.productsInDb();
     const product = {
       name: 'testproductWithImages',
@@ -121,17 +121,16 @@ describe.only('test product api', () => {
     const createdProduct = await Product.findByPk(response.body.productId, {
       include: [
         { model: Image, as: 'Images' },
-        { model: Image, as: 'CoverImage' }
       ]
     });
 
     assert(createdProduct);
     assert.strictEqual(createdProduct.Images.length, 3);
-    assert(createdProduct.CoverImage);
 
     // 可以进一步检查图片数据是否存在
-    assert(createdProduct.CoverImage.data);
-    assert(createdProduct.Images[0].data);
+    assert(createdProduct.Images.every(image => image.data));
+    const covers = createdProduct.Images.filter(image => image.isCover);
+    assert.strictEqual(covers.length, 1);
   });
 
 })

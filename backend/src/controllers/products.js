@@ -28,6 +28,7 @@ router.post('/', userExtractor, upload.fields([
     ...body,
     sellerId: req.user.userId
   });
+  
   if (files) {
     if (files.cover) {
       const coverFile = files.cover[0];

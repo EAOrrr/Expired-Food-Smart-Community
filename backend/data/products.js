@@ -8,7 +8,7 @@ const data = [
     description: 'This is an apple',
     stock: 10,
     expiryDate: '2023-01-01',
-    sellerId: users[0].userId
+    sellerId: users[0].userId,
   },
   {
     productId: '69d8979b-5282-41b9-9033-5707a3c51c45',
@@ -21,9 +21,9 @@ const data = [
   },
   {
     productId: 'f566acdd-f54c-47c2-bb03-f36bb8114263',
-    name: 'dish',
+    name: 'chip',
     price: 30.00,
-    description: 'This is a dish',  
+    description: 'This is a chip',  
     stock: 30,
     expiryDate: '2023-03-03',
     sellerId: users[1].userId

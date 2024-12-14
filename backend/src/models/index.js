@@ -4,6 +4,7 @@ const Order = require('./order')
 const Cart = require('./cart')
 const IdempotencyKey = require('./idempotencyKey')
 const Review = require('./review')
+const Image = require('./image')
 
 // Associations
 User.hasMany(Product, { foreignKey: 'SellerId', as: 'Products', onDelete: 'CASCADE' });
@@ -36,9 +37,13 @@ User.hasMany(Review, { foreignKey: 'reviewedId', as: 'ReviewsReceived', onDelete
 Review.belongsTo(User, { foreignKey: 'reviewerId', as: 'Reviewer' });
 Review.belongsTo(User, { foreignKey: 'reviewedId', as: 'Reviewed', onDelete: 'CASCADE' });
 
-Order.hasOne(Review, { foreignKey: 'orderId', as: 'Review'
-  , onDelete: 'CASCADE' });
+Order.hasOne(Review, { foreignKey: 'orderId', as: 'Review', onDelete: 'CASCADE' });
 Review.belongsTo(Order, { foreignKey: 'orderId', as: 'Order', onDelete: 'CASCADE' });
+
+Product.hasMany(Image, { foreignKey: 'productId', as: 'Images', onDelete: 'CASCADE' });
+Image.belongsTo(Product, { foreignKey: 'productId', as: 'Product', onDelete: 'CASCADE' });
+
+Product.belongsTo(Image, { foreignKey: 'coverImageId', as: 'CoverImage', onDelete: 'SET NULL' });
 
 // Hook to ensure order status is 'Delivered' before creating a review
 Review.beforeCreate(async (review, options) => {
@@ -70,5 +75,6 @@ module.exports = {
   Order,
   Cart,
   IdempotencyKey,
-  Review
+  Review,
+  Image,
 }

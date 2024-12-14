@@ -4,8 +4,10 @@ const helper = require('./test_helpers')
 const app = require('../src/app')
 const supertest = require('supertest')
 const api = supertest(app)
-const { User, Product } = require('../src/models')
+const { User, Product, Image } = require('../src/models')
 const { connectToDatabase, sequelize } = require('../src/utils/db')
+const path = require('path')
+const fs = require('fs')
 
 const user = {
   username: 'testuser',
@@ -15,8 +17,9 @@ const user = {
 }
 beforeEach(async () => {
   await connectToDatabase()
-  await Product.destroy({ where: {}})
-  await User.destroy({ where: {}})
+  // await Product.destroy({ where: {}})
+  // await User.destroy({ where: {}})
+  await helper.clearDatabase()
   await api
     .post('/api/users')
     .send(user)
@@ -24,7 +27,7 @@ beforeEach(async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-describe('test product api', () => {
+describe.only('test product api', () => {
   let token
   let productId
   const product0 = {
@@ -89,10 +92,51 @@ describe('test product api', () => {
     assert.strictEqual(productsAtEnd.length, productsAtStart.length - 1)
   })
 
+  test.only('create a product with images', async () => {
+    const productsAtStart = await helper.productsInDb();
+    const product = {
+      name: 'testproductWithImages',
+      price: 150,
+      description: 'test description with images',
+      stock: 5
+    };
+
+
+    const response = await api
+      .post('/api/products')
+      .set('Authorization', `bearer ${token}`)
+      .field('name', product.name)
+      .field('price', product.price)
+      .field('description', product.description)
+      .field('stock', product.stock)
+      .attach('cover', path.resolve(__dirname, './assets/cover.png'))
+      .attach('images', path.resolve(__dirname, './assets/img1.png'))
+      .attach('images', path.resolve(__dirname, './assets/img2.png'))
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const productsAtEnd = await helper.productsInDb();
+    assert.strictEqual(productsAtEnd.length, productsAtStart.length + 1);
+
+    const createdProduct = await Product.findByPk(response.body.productId, {
+      include: [
+        { model: Image, as: 'Images' },
+        { model: Image, as: 'CoverImage' }
+      ]
+    });
+
+    assert(createdProduct);
+    assert.strictEqual(createdProduct.Images.length, 3);
+    assert(createdProduct.CoverImage);
+
+    // 可以进一步检查图片数据是否存在
+    assert(createdProduct.CoverImage.data);
+    assert(createdProduct.Images[0].data);
+  });
+
 })
 
 after(async () => {
-  await Product.destroy({ where: {}})
-  await User.destroy({ where: {}})
+  await helper.clearDatabase()
   await sequelize.close()
 })

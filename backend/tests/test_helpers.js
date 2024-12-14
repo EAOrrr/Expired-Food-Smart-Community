@@ -5,6 +5,7 @@ const {
   Cart,
   Order,
   Review,
+  Image,
 } = require('../src/models')
 
 const initialProducts = [
@@ -74,6 +75,16 @@ const getToken = async (api, user) => {
   return response.body.token
 }
 
+const clearDatabase = async () => {
+  await Image.destroy({ where: {} })
+  await Cart.destroy({ where: {} })
+  await Review.destroy({ where: {} })
+  await Order.destroy({ where: {} })
+  await IdempotencyKey.destroy({ where: {} })
+  await Product.destroy({ where: {} })
+  await User.destroy({ where: {} })
+}
+
 
 module.exports = {
   initialProducts,
@@ -84,4 +95,5 @@ module.exports = {
   ordersInDb,
   cartsInDb,
   getToken,
+  clearDatabase,
 }

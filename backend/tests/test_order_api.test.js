@@ -33,11 +33,8 @@ let userToken, userToken1, userToken2
 
 beforeEach(async () => {
   await connectToDatabase()
-  await IdempotencyKey.destroy({ where: {} })
-  await Order.destroy({ where: {} })
-  await Cart.destroy({ where: {} })
-  await Product.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  await helper.clearDatabase()
+ 
   const response = await api
     .post('/api/users')
     .send(user)
@@ -402,10 +399,6 @@ describe('put /api/orders', () => {
 })
 
 after(async () => {
-  await IdempotencyKey.destroy({ where: {} })
-  await Order.destroy({ where: {} })
-  await Cart.destroy({ where: {} })
-  await Product.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  await helper.clearDatabase()
   await sequelize.close()
 })

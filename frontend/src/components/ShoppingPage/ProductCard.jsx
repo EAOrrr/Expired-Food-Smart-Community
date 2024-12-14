@@ -2,6 +2,7 @@ import { Grid, Card, CardContent, Typography, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 
 const ProductCard = ({ product, addToCart }) => {
+  console.log(product)
   return (
     <Grid item key={product.productId} xs={12} sm={6} md={4}>
       <Card>
@@ -22,7 +23,7 @@ const ProductCard = ({ product, addToCart }) => {
             有效期: {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '无'}
           </Typography>
           <Typography variant='body2' color='text.secondary'>
-            卖家ID: {product.sellerId}
+            卖家名字: {product.Seller.username}
           </Typography>
         </CardContent>
         <Button size='small' onClick={() => addToCart(product.productId)}>添加到购物车</Button>

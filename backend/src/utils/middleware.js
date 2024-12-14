@@ -15,6 +15,7 @@ const errorHandler = (error, req, res, next) => {
   console.log('\n\n', 'ERRORRRRRRRRRRRRRRRRRRRRRRR!!!!')
   console.log('From errorHandler:', error.name, error.message)
   console.error('error', error.name, error.message)
+  console.log('Stack:', error.stack)
   console.log('\n\n')
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' })

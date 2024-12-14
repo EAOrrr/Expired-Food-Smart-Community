@@ -26,10 +26,7 @@ let user0Token, user1Token
 
 beforeEach(async () => {
   await connectToDatabase()
-  await Review.destroy({ where: {} })
-  await Order.destroy({ where: {} })
-  await Product.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  await helper.clearDatabase()
   const response = await api
     .post('/api/users')
     .send(user0)
@@ -95,9 +92,6 @@ describe('create a review', () => {
 
 
 after(async () => {
-  await Review.destroy({ where: {} })
-  await Order.destroy({ where: {} })
-  await Product.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  await helper.clearDatabase()
   await sequelize.close()
 })

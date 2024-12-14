@@ -18,9 +18,7 @@ let userId
 
 beforeEach(async () => {
   await connectToDatabase()
-  await Cart.destroy({ where: {}})
-  await Product.destroy({ where: {}})
-  await User.destroy({ where: {}})
+  await helper.clearDatabase()
   const response = await api
     .post('/api/users')
     .send(user)
@@ -46,7 +44,7 @@ describe.only('test cart api', () => {
 
   test.only('get carts', async () => {
     const response = await api
-      .get('/api/carts/me')
+      .get('/api/carts')
       .set('Authorization', `bearer ${token}`)
       .expect(200)
       .expect('Content-Type', /application\/json/)
@@ -122,8 +120,6 @@ describe.only('test cart api', () => {
 })
 
 after(async () => {
-  await Cart.destroy({ where: {} })
-  await Product.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  await helper.clearDatabase()
   await sequelize.close()
 })

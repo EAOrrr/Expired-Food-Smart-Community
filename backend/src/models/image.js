@@ -1,8 +1,10 @@
 const { sequelize } = require('../utils/db')
 const { DataTypes, Model, UUIDV4 } = require('sequelize')
 
+class Image extends Model {}
+
 Image.init({
-  id: {
+  imageId: {
     type: DataTypes.UUID,
     primaryKey: true,
     allowNull: false,

@@ -9,7 +9,7 @@ const { connectToDatabase, sequelize } = require('../src/utils/db')
 
 beforeEach(async () => {
   await connectToDatabase()
-  await User.destroy({ where: {}})
+  await helper.clearDatabase()
 })
 
 describe('create a user', () => {
@@ -106,6 +106,6 @@ describe('user info management', () => {
 })
 
 after(async () => {
-  await User.destroy({ where: {}})
+  await helper.clearDatabase()
   await sequelize.close()
 })

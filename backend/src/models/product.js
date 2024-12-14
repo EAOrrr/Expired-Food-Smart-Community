@@ -37,6 +37,15 @@ Product.init({
       model: 'users', // name of the target model
       key: 'user_id', // key in the target model
     }
+  },
+  coverImageId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'images',
+      key: 'image_id',
+    },
+    onDelete: 'SET NULL',
   }
 }, {
   sequelize,

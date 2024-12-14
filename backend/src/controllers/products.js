@@ -15,7 +15,8 @@ router.get('/', async (req, res) => {
       model: Image,
       as: 'Images',
       attributes: ['imageId'],
-      where: { isCover: true }
+      where: { isCover: true },
+      required: false
     }],
     attributes: {
       exclude: ['sellerId']

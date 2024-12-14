@@ -2,6 +2,9 @@ import { Grid2 as Grid, Card, CardContent, Typography, Button, CardActionArea, C
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
+// 商品卡片
+/* TODO: 美化 */
+
 const ProductCard = ({ product, addToCart }) => {
   console.log(product)
   return (

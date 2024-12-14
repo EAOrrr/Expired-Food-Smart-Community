@@ -25,7 +25,7 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          isIn: [['deposit', 'payment', 'income']],
+          isIn: [['deposit', 'payment', 'income', 'refund']],
         },
       },
       order_id: {

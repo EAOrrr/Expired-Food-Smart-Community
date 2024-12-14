@@ -65,11 +65,12 @@ beforeEach(async () => {
   await User.update({ balance: 1000 }, { where: { userId } })
 })
 
-describe.only('post /api/orders/product', () => {
+describe('post /api/orders/product', () => {
   test('buy a product', async () => {
     const productsAtStart = await helper.productsInDb()
     const ordersAtStart = await helper.ordersInDb()
     const usersAtStart = await helper.usersInDb()
+    const billsAtStart = await helper.billsInDb()
 
     const product = productsAtStart[0]
     const response = await api
@@ -88,6 +89,7 @@ describe.only('post /api/orders/product', () => {
     const productsAtEnd = await helper.productsInDb()
     const ordersAtEnd = await helper.ordersInDb()
     const usersAtEnd = await helper.usersInDb()
+    const billsAtEnd = await helper.billsInDb()
 
     const productAfterBuy = productsAtEnd.find(p => p.productId === product.productId)
     assert.strictEqual(productAfterBuy.stock, product.stock - 1)
@@ -96,12 +98,18 @@ describe.only('post /api/orders/product', () => {
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     const userAfterBuy = usersAtEnd.find(u => u.userId === userId)
     assert.strictEqual(parseFloat(userAfterBuy.balance), parseFloat(usersAtStart.find(u => u.userId === userId).balance - product.price))
+    assert.strictEqual(billsAtEnd.length, billsAtStart.length + 1)
+    const bill = billsAtEnd.find(b => b.orderId === response.body.orderId)
+    assert.strictEqual(parseFloat(bill.amount), -product.price)
+    assert.strictEqual(bill.operation, 'payment')
+    assert.strictEqual(bill.userId, userId)
   })
 
   test('buy a product with insufficient stock', async () => {
     const productsAtStart = await helper.productsInDb()
     const ordersAtStart = await helper.ordersInDb()
     const usersAtStart = await helper.usersInDb()
+    const billsAtStart = await helper.billsInDb()
 
     const product = productsAtStart[0]
     await api
@@ -114,12 +122,14 @@ describe.only('post /api/orders/product', () => {
     const productsAtEnd = await helper.productsInDb()
     const ordersAtEnd = await helper.ordersInDb()
     const usersAtEnd = await helper.usersInDb()
+    const billsAtEnd = await helper.billsInDb()
 
     assert(productsAtEnd.find(p => p.productId === product.productId).stock === product.stock)
     assert.strictEqual(productsAtEnd.length, productsAtStart.length)
     assert.strictEqual(ordersAtEnd.length, ordersAtStart.length)
     const userAfterBuy = usersAtEnd.find(u => u.userId === userId)
     assert.strictEqual(parseFloat(userAfterBuy.balance), parseFloat(usersAtStart.find(u => u.userId === userId).balance))
+    assert.strictEqual(billsAtEnd.length, billsAtStart.length)
   })
 
   test('buy a non-existent product', async () => {
@@ -135,6 +145,7 @@ describe.only('post /api/orders/product', () => {
     const productsAtStart = await helper.productsInDb()
     const ordersAtStart = await helper.ordersInDb()
     const usersAtStart = await helper.usersInDb()
+    const billsAtStart = await helper.billsInDb()
 
     const products = productsAtStart[0]
 
@@ -153,6 +164,7 @@ describe.only('post /api/orders/product', () => {
     const productsAtEnd = await helper.productsInDb()
     const ordersAtEnd = await helper.ordersInDb()
     const usersAtEnd = await helper.usersInDb()
+    const billsAtEnd = await helper.billsInDb()
 
     const productAfterBuy = productsAtEnd.find(p => p.productId === products.productId)
     assert.strictEqual(productAfterBuy.stock, products.stock - 2)
@@ -163,10 +175,14 @@ describe.only('post /api/orders/product', () => {
     const userAfterBuy = usersAtEnd.find(u => u.userId === userId)
     console.log(userBeforeBuy.balance, products.price * 2, userAfterBuy.balance)
     assert.strictEqual(parseFloat(userAfterBuy.balance), parseFloat(userBeforeBuy.balance) - products.price * 2)
+    const bill = billsAtEnd.find(b => b.orderId === response.body.orderId)
+    assert.strictEqual(parseFloat(bill.amount), -products.price * 2)
+    assert.strictEqual(bill.operation, 'payment')
+    assert.strictEqual(bill.userId, userId)
   })
 })
 
-describe('post /api/orders/cart', () => {
+describe.only('post /api/orders/cart', () => {
   beforeEach(async () => {
     // prepare a cart
     const productsAtStart = await helper.productsInDb()
@@ -182,7 +198,7 @@ describe('post /api/orders/cart', () => {
     assert.strictEqual(carts.length, 3)
   })
 
-  test('checkout a cart', async () => {
+  test.only('checkout a cart', async () => {
     const cartsAtStart = await helper.cartsInDb()
     const productsAtStart = await helper.productsInDb()
     const ordersAtStart = await helper.ordersInDb()
@@ -295,6 +311,8 @@ describe('put /api/orders', () => {
   test('cancel an order by buyer', async () => {
     const ordersAtStart = await helper.ordersInDb()
     const usersAtStart = await helper.usersInDb()
+    const billsAtStart = await helper.billsInDb()
+
     const user = usersAtStart.find(u => u.userId === userId)
     const order = ordersAtStart[0]
     await api
@@ -302,6 +320,7 @@ describe('put /api/orders', () => {
       .send({ status: 'Cancelled' })
       .set('Authorization', `bearer ${userToken}`)
       .expect(200)
+
     const ordersAtEnd = await helper.ordersInDb()
     assert.strictEqual(ordersAtEnd.length, ordersAtStart.length)
     const orderAfterCancel = ordersAtEnd.find(o => o.orderId === order.orderId)
@@ -317,13 +336,23 @@ describe('put /api/orders', () => {
     const userAfterCancel = usersAtEnd.find(u => u.userId === userId)
     assert.strictEqual(parseFloat(userAfterCancel.balance), parseFloat(user.balance) + product0.price * 2)
 
+    // check if a refund bill is created
+    const billsAtEnd = await helper.billsInDb()
+    assert.strictEqual(billsAtEnd.length, billsAtStart.length + 1)
+    const refundBill = billsAtEnd.find(b => b.orderId === order.orderId)
+    assert.strictEqual(parseFloat(refundBill.amount), product0.price * 2)
+    assert.strictEqual(refundBill.operation, 'refund')
+    assert.strictEqual(refundBill.userId, userId)
+
   })
 
 
   test('cancel an order by seller', async () => {
     const ordersAtStart = await helper.ordersInDb()
+    const billsAtStart = await helper.billsInDb()
     const user = await User.findByPk(userId)
     const order = ordersAtStart[0]
+    
     await api
       .put(`/api/orders/${order.orderId}`)
       .send({ status: 'Cancelled' })
@@ -343,6 +372,14 @@ describe('put /api/orders', () => {
     const usersAtEnd = await helper.usersInDb()
     const userAfterCancel = usersAtEnd.find(u => u.userId === userId)
     assert.strictEqual(parseFloat(userAfterCancel.balance), parseFloat(user.balance) + product0.price * 2)
+    
+    // check if a refund bill is created
+    const billsAtEnd = await helper.billsInDb()
+    assert.strictEqual(billsAtEnd.length, billsAtStart.length + 1)
+    const refundBill = billsAtEnd.find(b => b.orderId === order.orderId)
+    assert.strictEqual(parseFloat(refundBill.amount), product0.price * 2)
+    assert.strictEqual(refundBill.operation, 'refund')
+    assert.strictEqual(refundBill.userId, userId)
   })
 
   test('cancel an order by unauthorized user', async () => {
@@ -377,6 +414,7 @@ describe('put /api/orders', () => {
       const ordersAtStart = await helper.ordersInDb()
       const usersAtStart = await helper.usersInDb()
       const user1AtStart = usersAtStart.find(u => u.userId === userId1)
+      const billsAtStart = await helper.billsInDb()
       
       await api
         .put(`/api/orders/${ordersAtStart[0].orderId}`)
@@ -392,6 +430,14 @@ describe('put /api/orders', () => {
       const user1AtEnd = await helper.usersInDb()
       const user1AfterTransition = user1AtEnd.find(u => u.userId === userId1)
       assert.strictEqual(parseFloat(user1AfterTransition.balance), parseFloat(user1AtStart.balance) + parseFloat(orderAfterTransition.total))
+
+      // check if a income bill is created
+      const billsAtEnd = await helper.billsInDb()
+      assert.strictEqual(billsAtEnd.length, billsAtStart.length + 1)
+      const incomeBill = billsAtEnd.find(b => b.orderId === orderAfterTransition.orderId)
+      assert.strictEqual(parseFloat(incomeBill.amount), parseFloat(orderAfterTransition.total))
+      assert.strictEqual(incomeBill.operation, 'income')
+      assert.strictEqual(incomeBill.userId, userId1)
 
     })
 

@@ -5,6 +5,13 @@ import
 import { createNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 
+/*
+  * 购物车页面
+  * TODO： 
+  * 增减购物车商品数量
+  * 删除购物车商品
+*/
+
 const Cart = () => {
   const [cart, setCart] = useState([])
   const [selectedCartItems, setSelectedCartItems] = useState([])

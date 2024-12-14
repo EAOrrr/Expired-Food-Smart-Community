@@ -6,6 +6,12 @@ import { createNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 import ProductCard from './ProductCard'
 
+/*
+  * 商品页面
+  * TODO： 
+  * 拓展：直接在这里把商品加入购物车 或者 把 addcart移动到ProductCard组件中
+*/
+
 const ShoppingPage = () => {
   const [products, setProducts] = useState([])
   const dispatch = useDispatch()

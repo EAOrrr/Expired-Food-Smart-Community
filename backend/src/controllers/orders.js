@@ -82,6 +82,13 @@ router.post('/product', userExtractor, async (req, res, next) => {
       status: 'Pending',
     }, { transaction: t });
 
+    // 创建账单
+    await user.createBill({
+      orderId: order.orderId,
+      amount: - totalPrice,
+      operation: 'payment',
+    }, { transaction: t });
+
     // 保存Idempotency Key
     await IdempotencyKey.create({
       key: idempotencyKey,
@@ -156,7 +163,7 @@ router.post('/cart', userExtractor, async (req, res) => {
       // 减少商品库存
       await product.update({ stock: product.stock - quantity }, { transaction: t });
 
-      await Order.create({
+      const order = await Order.create({
         productId: product.productId,
         buyerId: user.userId,
         sellerId: product.sellerId,
@@ -165,6 +172,12 @@ router.post('/cart', userExtractor, async (req, res) => {
         total: product.price * quantity,
       }, { transaction: t });
 
+      // 创建账单
+      await user.createBill({
+        orderId: order.orderId,
+        amount: - product.price * quantity,
+        operation: 'payment',
+      }, { transaction: t });
 
       totalPrice += product.price * quantity;
 
@@ -197,7 +210,7 @@ router.post('/cart', userExtractor, async (req, res) => {
     });
   } catch (error) {
     if (!t.finished) await t.rollback();
-    // throw(error)
+    throw(error)
     res.status(400).json({ error: error.message });
   }
 });
@@ -285,6 +298,12 @@ router.put('/:id', userExtractor, async (req, res) => {
       // Transfer money to seller
       const seller = await User.findByPk(order.sellerId, { transaction: t });
       await seller.increment('balance', { by: order.total, transaction: t });
+      // create bill for seller
+      await seller.createBill({
+        orderId: order.orderId,
+        amount: order.total,
+        operation: 'income',
+      }, { transaction: t });
     } else if (status === 'Cancelled') {
       // Refund buyer
       const buyer = await User.findByPk(order.buyerId, { transaction: t });
@@ -293,6 +312,12 @@ router.put('/:id', userExtractor, async (req, res) => {
       const product = await Product.findByPk(order.productId, { transaction: t });
       product.stock += order.quantity;
       await product.increment('stock', { by: order.quantity, transaction: t });
+      // create bill for buyer
+      await buyer.createBill({
+        orderId: order.orderId,
+        amount: order.total,
+        operation: 'refund',
+      }, { transaction: t });
     }
 
     await t.commit();

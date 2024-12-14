@@ -26,7 +26,7 @@ Bill.init({
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      isIn: [['deposit', 'payment', 'income']]
+      isIn: [['deposit', 'payment', 'income', 'refund']]
     }
   },
   orderId: {

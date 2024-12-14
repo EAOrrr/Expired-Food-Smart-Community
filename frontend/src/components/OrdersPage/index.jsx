@@ -5,6 +5,10 @@ import ordersService from '../../services/orders'
 import reviewService from '../../services/review'
 import OrderCard from './OrderCard'
 
+/*
+  * 订单页面
+  * TODO：拓展：订单状态筛选、订单分开展示
+*/
 const Order = () => {
     const user = useSelector(state => state.user)
     const [buyOrders, setBuyOrders] = useState([])

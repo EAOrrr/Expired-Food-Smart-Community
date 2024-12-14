@@ -6,6 +6,7 @@ const {
   Order,
   Review,
   Image,
+  Bill,
 } = require('../src/models')
 
 const initialProducts = [
@@ -66,6 +67,11 @@ const reviewsInDb = async () => {
   return reviews.map(r => r.toJSON())
 }
 
+const billsInDb = async () => {
+  const bills = await Bill.findAll()
+  return bills.map(b => b.toJSON())
+}
+
 const getToken = async (api, user) => {
   const response = await api
     .post('/api/login')
@@ -76,6 +82,7 @@ const getToken = async (api, user) => {
 }
 
 const clearDatabase = async () => {
+  await Bill.destroy({ where: {} })
   await Image.destroy({ where: {} })
   await Cart.destroy({ where: {} })
   await Review.destroy({ where: {} })
@@ -96,4 +103,5 @@ module.exports = {
   cartsInDb,
   getToken,
   clearDatabase,
+  billsInDb,
 }

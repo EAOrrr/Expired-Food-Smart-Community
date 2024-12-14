@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import productsService from "../../services/products";
 
+/*
+TODO:
+1. 卖家信息 + 跳转卖家个人信息页面
+2. 增减商品数量，选择 加入购物车 or 直接购买
+3. 拓展：排版
+*/
+
 const ProductPage = () => {
   const id = useParams().id;
   const [product, setProduct] = useState(null);

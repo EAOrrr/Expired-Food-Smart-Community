@@ -7,6 +7,7 @@ const {
   Order,
   Review,
   Image,
+  Bill,
 } = require('../models');
 
 const users = require('../../data/users')
@@ -17,12 +18,11 @@ const reviews = require('../../data/reviews')
 const images = require('../../data/images')
 
 const bcrypt = require('bcrypt')
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
 
 const initialize = async () => {
   await connectToDatabase()
-  
+  await Bill.destroy({ where: {} });
   await Image.destroy({ where: {} });
   await Review.destroy({ where: {} });
   await Order.destroy({ where: {} });

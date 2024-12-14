@@ -236,7 +236,7 @@ router.put('/:id', userExtractor, async (req, res) => {
     const validTransitions = {
       Pending: ['Delivering', 'Cancelled'],
       Delivering: ['Delivered', 'Cancelled'],
-      Delivered: ['Cancelled'],
+      Delivered: [],
       Cancelled: []
     };
     console.log(validTransitions[order.status], status)
@@ -263,6 +263,8 @@ router.put('/:id', userExtractor, async (req, res) => {
 
     // delivered 特殊判断
     // 如果是卖家发起，且订单状态为 Delivering， 距离上次更新时间未超过 7 天，不允许发起
+    // 买家发起时，不受时间限制
+    // （该情况暂未测试）
     if (status === 'Delivered' && user.userId === order.sellerId && order.status === 'Delivering') {
       const now = new Date();
       const diff = now - order.updatedAt;

@@ -1,10 +1,10 @@
 const { Model, DataTypes, UUIDV4 } = require('sequelize');
 const { sequelize } = require('../utils/db');
 
-class Cart extends Model {}
+class Bill extends Model {}
 
-Cart.init({
-  cartId: {
+Bill.init({
+  billId: {
     type: DataTypes.UUID,
     primaryKey: true,
     allowNull: false,
@@ -18,33 +18,29 @@ Cart.init({
       key: 'user_id', // key in the target model
     }
   },
-  productId: {
+  amount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  operation: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      isIn: [['deposit', 'payment', 'income']]
+    }
+  },
+  orderId: {
     type: DataTypes.UUID,
     allowNull: true,
     references: {
-      model: 'products', // name of the target model
-      key: 'product_id', // key in the target model
+      model: 'orders', // name of the target model
+      key: 'order_id', // key in the target model
     }
-  },
-  quantity: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  addedAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
   }
 }, {
   sequelize,
   underscored: true,
-  modelName: 'cart',
-  indexes: [
-    {
-      unique: true,
-      fields: ['user_id', 'product_id']
-    }
-  ]
-});
+  modelName: 'bill'
+})
 
-module.exports = Cart;
+module.exports = Bill;

@@ -4,9 +4,9 @@ const path = require('path')
 const { DATABASE_URL } = require('./config')
 
 const sequelize = new Sequelize(DATABASE_URL, )
+
 const migrationConf = {
   migrations: {
-    // glob: 'migrations/*.js',
     glob: path.join(__dirname, '../migrations/*.js'),
   },
   storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),

@@ -31,22 +31,28 @@ router.post('/', userExtractor, upload.fields([
   if (files) {
     if (files.cover) {
       const coverFile = files.cover[0];
-      const coverImage = await Image.create({
+      await Image.create({
         data: coverFile.buffer,
         mimeType: coverFile.mimetype,
-        productId: product.productId
+        productId: product.productId,
+        isCover: true
       });
-      await product.update({ coverImageId: coverImage.imageId });
     }
 
     if (files.images) {
-      for (const imageFile of files.images) {
-        await Image.create({
-          data: imageFile.buffer,
-          mimeType: imageFile.mimetype,
-          productId: product.productId
-        });
-      }
+      // for (const imageFile of files.images) {
+      //   await Image.create({
+      //     data: imageFile.buffer,
+      //     mimeType: imageFile.mimetype,
+      //     productId: product.productId
+      //   });
+      // }
+      const images = files.images.map(imageFile => ({
+        data: imageFile.buffer,
+        mimeType: imageFile.mimetype,
+        productId: product.productId
+      }));
+      await Image.bulkCreate(images);
     }
   }
 

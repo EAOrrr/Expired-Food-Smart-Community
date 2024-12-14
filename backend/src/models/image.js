@@ -27,7 +27,12 @@ Image.init({
       model: 'products',
       key: 'productId',
     }
-  }
+  },
+  isCover: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
 }, {
   sequelize,
   underscored: true,

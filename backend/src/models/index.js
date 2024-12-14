@@ -61,6 +61,25 @@ Order.beforeCreate(async (order, options) => {
   }
 });
 
+Order.beforeUpdate(async (order, options) => {
+  const validTransitions = {
+    Pending: ['Delivering', 'Cancelled'],
+    Delivering: ['Delivered', 'Cancelled'],
+    Delivered: ['Cancelled'],
+  };
+  const currentStatus = order._previousDataValues.status;
+  const newStatus = order.status;
+
+  if (!validTransitions[currentStatus]?.includes(newStatus)) {
+    throw new Error(`Invalid status transition from ${currentStatus} to ${newStatus}`);
+  }
+});
+
+Order.beforeCreate((order, options) => {
+  order.total = order.price * order.quantity;
+});
+
+
 // Hook to ensure productId exists before creating a cart
 Cart.beforeCreate(async (cart, options) => {
   const product = await Product.findByPk(cart.productId);

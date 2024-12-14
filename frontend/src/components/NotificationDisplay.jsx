@@ -33,3 +33,4 @@ const NotificationDisplay = () => {
 }
 
 export default NotificationDisplay;
+

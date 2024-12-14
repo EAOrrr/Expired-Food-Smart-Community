@@ -3,16 +3,20 @@ import {
   IconButton,
   Typography,
   Button,
-  Badge,
   AppBar,
   Container,
   Toolbar,
-  Avatar
-
+  Avatar,
+  Tooltip,
+  MenuItem,
+  Menu
 } from '@mui/material'
+import { deepPurple } from '@mui/material/colors';
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../reducers/userReducer'
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const pages = [
   // { label: '首页', href: '/' },
@@ -21,37 +25,92 @@ const pages = [
   { label: '我的订单', href: '/orders' },
   { label: '其他功能', href: '/other' }
 ]
+const settings = [
+  { label: '个人信息', href: '/profile' },
+  { label: '查看余额', href: '/balance' },
+  { label: '设置', href: '/settings' }
+]
 
-
-const NavigationBarLargeScreen = () => {
+const UserInfo = ({ user }) => {
   const dispatch = useDispatch()
-  const user = useSelector(state => state.user)
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
 
-  const UserInfo = () => (
-    <Box sx={{display: 'flex'}}>
-      <Box sx={{mr: 1, flexDirection: 'row'}}>
-        <Link to='/profile' style={{ textDecoration: 'none' }}>
-            <Avatar>H</Avatar>
-        </Link>
-      </Box>
-      <Button onClick={() => dispatch(logout())}>
-        <Typography variant='inherit' textAlign='center' color='white'>退出登录</Typography>
-      </Button>
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  }; 
+  if (!user) return null
+  return (
+    <Box sx={{ display: 'flex', flexGrow: 0 }}>
+      <Tooltip title="个人信息">
+        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+          <Avatar sx={{ bgcolor: deepPurple[500] }}>
+            {user.username[0]}
+          </Avatar>
+        </IconButton>
+      </Tooltip>
+      <Menu
+        sx={{ mt: '45px' }}
+        anchorEl={anchorElUser}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={Boolean(anchorElUser)}
+        onClose={handleCloseUserMenu}
+      >
+        {settings.map((setting) => (
+          <MenuItem
+            component={Link}
+            key={setting.label}
+            onClick={handleCloseUserMenu}
+            to={setting.href}
+          >
+            <Typography sx={{ textAlign: 'center' }}>{setting.label}</Typography>
+          </MenuItem>
+        ))}
+        <MenuItem
+          onClick={() => {
+            dispatch(logout())
+            handleCloseUserMenu()
+          }}
+        >
+          <Typography sx={{ textAlign: 'center' }}>退出登录</Typography>
+        </MenuItem>
+      </Menu>
     </Box>
   )
+}
 
-  const LoginButton = () => (
-    <Button component={Link} to='/login' sx={{ color: 'white' }}>
-      登录
-    </Button>
-  )
-  
+UserInfo.propTypes = {
+  user: PropTypes.shape({
+    username: PropTypes.string.isRequired
+  })
+}
+
+const LoginButton = () => (
+  <Button component={Link} to='/login' sx={{ color: 'white' }}>
+    登录
+  </Button>
+)
+
+const NavigationBar = () => {
+  const user = useSelector(state => state.user)
+
   return (
     <AppBar position='static'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
           <Box sx={{
-            display: 'flex' 
+            display: 'flex', 
+            flexGrow: 1
           }}>
             {pages.map(page => (
               <Button
@@ -64,18 +123,14 @@ const NavigationBarLargeScreen = () => {
               </Button>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{
-            display: 'flex' 
-          }}>
-            {user.info
-            ? <UserInfo />
+          <Box sx={{ flexGrow: 0 }} />
+          {user.info
+            ? <UserInfo user={user.info}/>
             : <LoginButton />}
-          </Box>
         </Toolbar>
       </Container>
     </AppBar>
   )
 }
 
-export default NavigationBarLargeScreen
+export default NavigationBar

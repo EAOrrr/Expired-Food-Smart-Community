@@ -26,7 +26,7 @@ function App() {
       <Route path='/sign-up' element={!user.loading && user.info ? <Navigate to='/'/> : <SignUp />} />
       <Route path='/test' element={<ProtectedRoute> <NotificationDisplay /> </ProtectedRoute>} />
       {/* <Route path='/shopping' element={<ProtectedRoute> <ShoppingPage /> </ProtectedRoute>} /> */}
-      <Route path= '/shopping/:id' element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
+      <Route path= '/products/:id' element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
       <Route path='/carts' element={<ProtectedRoute><CartsPage /></ProtectedRoute>} />
       <Route path='/orders' element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
       <Route path='*' element={<Navigate to='/' />} />

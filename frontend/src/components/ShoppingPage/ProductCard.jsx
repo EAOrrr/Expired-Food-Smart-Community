@@ -1,16 +1,26 @@
-import { Grid, Card, CardContent, Typography, Button } from '@mui/material';
+import { Grid2 as Grid, Card, CardContent, Typography, Button, CardActionArea, CardMedia, CardActions } from '@mui/material';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 const ProductCard = ({ product, addToCart }) => {
   console.log(product)
   return (
-    <Grid item key={product.productId} xs={12} sm={6} md={4}>
+    <Grid item id={product.productId}  size={{ xs: 12, md: 4 }}>
       <Card>
+        <CardActionArea component={Link} to={`/products/${product.productId}`}>
+        <CardMedia
+          component='img'
+          image={product.coverImageId
+            ? `/api/images/${product.coverImageId}`
+            : '/src/assets/default.jpg'
+          }
+          sx={{ height: 140, objectFit: 'contain' }}
+          />
         <CardContent>
-          <Typography gutterBottom variant='h5' component='div'>
+          <Typography variant='h5' component='div'>
             {product.name}
           </Typography>
-          <Typography variant='body2' color='text.secondary'>
+          <Typography variant='subtitle' color='text.secondary'>
             {product.description}
           </Typography>
           <Typography variant='body2' color='text.secondary'>
@@ -26,7 +36,10 @@ const ProductCard = ({ product, addToCart }) => {
             卖家名字: {product.Seller.username}
           </Typography>
         </CardContent>
+        </CardActionArea>
+        <CardActions>
         <Button size='small' onClick={() => addToCart(product.productId)}>添加到购物车</Button>
+        </CardActions>
       </Card>
     </Grid>
   );

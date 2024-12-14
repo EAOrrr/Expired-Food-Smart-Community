@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Typography, Grid } from '@mui/material'
+import { Box, Typography, Grid2 as Grid } from '@mui/material'
 import productsService from '../../services/products'
 import cartsService from '../../services/carts'
 import { createNotification } from '../../reducers/notificationReducer'

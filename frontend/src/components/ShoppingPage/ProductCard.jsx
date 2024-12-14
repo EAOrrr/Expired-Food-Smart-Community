@@ -10,8 +10,8 @@ const ProductCard = ({ product, addToCart }) => {
         <CardActionArea component={Link} to={`/products/${product.productId}`}>
         <CardMedia
           component='img'
-          image={product.coverImageId
-            ? `/api/images/${product.coverImageId}`
+          image={product.Images.length > 0
+            ? `/api/images/${product.Images[0].imageId}`
             : '/src/assets/default.jpg'
           }
           sx={{ height: 140, objectFit: 'contain' }}

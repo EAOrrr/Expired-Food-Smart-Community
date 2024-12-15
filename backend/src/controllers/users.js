@@ -71,19 +71,29 @@ router.get('/me', userExtractor, async (req, res) => {
 router.get('/:userid', userExtractor, async (req, res) => {
   const { userid } = req.params
   const requestedUser = await User.findByPk(userid, {
-    attributes: { exclude: ['passwordHash', 'address', 'balance'] },
+    attributes: {
+      exclude: ['passwordHash', 'address', 'balance'],
+      include: [
+        [
+          sequelize.fn('AVG', sequelize.col('ReviewsReceived.rating')), 'averageRating'
+        ]
+      ]
+    },
     include: [
       {
-        model: 'review',
+        model: Review,
         as: 'ReviewsReceived',
-        attributes: ['rating', 'content', 'reviewId', 'type'],
+        attributes: []
       }
-    ]
+    ],
+    group: ['User.userId']
   })
+
   if (!requestedUser) {
     return res.status(404).json({ error: 'User not found' })
   }
-  res.status(200).json(requestedUser)
+
+  res.json(requestedUser)
 })
 
 router.put('/me', userExtractor, async (req, res) => {

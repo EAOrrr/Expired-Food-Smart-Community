@@ -18,7 +18,14 @@ router.get('/', userExtractor, async (req, res) => {
   const carts = await user.getCarts({
     include: {
       model: Product,
-      as: 'Product'
+      as: 'Product',
+      include: {
+        model: Image,
+        as: 'Images',
+        where: { isCover: true },
+        required: false,
+        attributes: ['imageId']
+      }
     }
   })
 

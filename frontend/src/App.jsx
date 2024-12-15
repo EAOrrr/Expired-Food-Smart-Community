@@ -11,6 +11,7 @@ import CartsPage from './components/CartsPage'
 import OrdersPage from './components/OrdersPage'
 import ProductPage from "./components/ProductPage"
 import Profile from './components/Profile'
+import BillsPage from './components/BillsPage'
 
 
 function App() {
@@ -36,7 +37,8 @@ function App() {
       <Route path='/carts' element={<ProtectedRoute><CartsPage /></ProtectedRoute>} />
       <Route path='/orders' element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
       <Route path='/profile' element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-      {/* <Route path='/bills' element={<ProtectedRoute> <></> </ProtectedRoute>} /> */}
+      <Route path='/bills' element={<ProtectedRoute><BillsPage /></ProtectedRoute>} />
+
       {/* 展示用户的商品列表，可在此创建商品、修改商品、删除商品 */}
       {/* <Route path='/my-products' element={<ProtectedRoute> <></> </ProtectedRoute>} /> */}
       {/* 展示评论列表，包括自己对他人的评论（可删除）和他人对自己的评论（不可删除） */}

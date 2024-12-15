@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Box, Typography, List, ListItem, ListItemText, Divider, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Rating } from '@mui/material'
+import { Box, Typography, List, Tab, Tabs } from '@mui/material'
 import ordersService from '../../services/orders'
 import reviewService from '../../services/review'
 import OrderCard from './OrderCard'
@@ -17,6 +17,7 @@ const Order = () => {
     const [reviewContent, setReviewContent] = useState('')
     const [reviewRating, setReviewRating] = useState(0)
     const [open, setOpen] = useState(false)
+    const [tabIndex, setTabIndex] = useState(0)
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -34,7 +35,6 @@ const Order = () => {
         setSelectedOrder(order)
         setOpen(true)
     }
-
 
     const handleClose = () => {
         setOpen(false)
@@ -54,59 +54,45 @@ const Order = () => {
             handleClose()
         }
     }
-    console.log(buyOrders)
-    console.log(sellOrders)
-    console.log('sellproduct', sellOrders && sellOrders.map(order => order.Product.name))
-    // return (<></>)
+
+    const handleTabChange = (event, newValue) => {
+        setTabIndex(newValue)
+    }
 
     return (
-        <div>
-            <h1>我的订单</h1>
-            <Typography variant="h6" gutterBottom>购买订单</Typography>
-            {buyOrders.length === 0 ? (
-                <Typography variant="body1">暂无购买订单</Typography>
-            ) : (
-                <List>
-                    {buyOrders.map(order => (
-                        <OrderCard key={order.id} order={order} />
-                    ))}
-                </List>
+        <Box sx={{ p: 2 }}>
+            <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>我的订单</Typography>
+            <Tabs value={tabIndex} onChange={handleTabChange} sx={{ marginBottom: 2 }}>
+                <Tab label="购买订单" sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }} />
+                <Tab label="销售订单" sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }} />
+            </Tabs>
+            {tabIndex === 0 && (
+                <>
+                    {buyOrders.length === 0 ? (
+                        <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>暂无购买订单</Typography>
+                    ) : (
+                        <List>
+                            {buyOrders.map(order => (
+                                <OrderCard key={order.id} order={order} />
+                            ))}
+                        </List>
+                    )}
+                </>
             )}
-            <Typography variant="h6" gutterBottom>销售订单</Typography>
-            {sellOrders.length === 0 ? (
-                <Typography variant="body1">暂无销售订单</Typography>
-            ) : (
-                <List>
-                    {sellOrders.map(order => (
-                        <OrderCard key={order.id} order={order} />
-                    ))}
-                </List>
+            {tabIndex === 1 && (
+                <>
+                    {sellOrders.length === 0 ? (
+                        <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>暂无销售订单</Typography>
+                    ) : (
+                        <List>
+                            {sellOrders.map(order => (
+                                <OrderCard key={order.id} order={order} />
+                            ))}
+                        </List>
+                    )}
+                </>
             )}
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>创建评论</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="评论内容"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        value={reviewContent}
-                        onChange={(e) => setReviewContent(e.target.value)}
-                    />
-                    <Rating
-                        name="rating"
-                        value={reviewRating}
-                        onChange={(e, newValue) => setReviewRating(newValue)}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>取消</Button>
-                    <Button onClick={handleSubmitReview}>提交</Button>
-                </DialogActions>
-            </Dialog>
-        </div>
+        </Box>
     )
 }
 

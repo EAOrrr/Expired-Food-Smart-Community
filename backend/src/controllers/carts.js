@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { userExtractor } = require('../utils/middleware');
-const { Cart, Product, User } = require('../models');
+const { Cart, Product, User, Image } = require('../models');
 
 router.get('/', userExtractor, async (req, res) => {
   const user = req.user

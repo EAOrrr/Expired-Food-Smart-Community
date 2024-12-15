@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 const router = require('express').Router()
 const { userExtractor, } = require('../utils/middleware')
-const { User, IdempotencyKey, Order, Bill } = require('../models')
+const { User, IdempotencyKey, Order, Bill, Review } = require('../models')
 const { sequelize } = require('../utils/db')
 
 router.post('/', async(req, res) => {
@@ -83,10 +83,10 @@ router.get('/:userid', userExtractor, async (req, res) => {
       {
         model: Review,
         as: 'ReviewsReceived',
-        attributes: []
+        attributes: ['reviewId', 'content', 'rating', 'createdAt']
       }
     ],
-    group: ['User.userId']
+    group: ['user.user_id', 'ReviewsReceived.review_id']
   })
 
   if (!requestedUser) {

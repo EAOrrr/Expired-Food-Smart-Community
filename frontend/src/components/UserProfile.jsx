@@ -12,6 +12,7 @@ const UserProfile = () => {
     const fetchUserInfo = async () => {
       try {
         const data = await userService.getUserInfo(id)
+        console.log(data)
         setUserInfo(data)
         setReviewsReceived(data.ReviewsReceived)
       } catch (error) {

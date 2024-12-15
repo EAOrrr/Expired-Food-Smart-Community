@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 const router = require('express').Router()
 const { userExtractor, } = require('../utils/middleware')
-const { User, IdempotencyKey, Order } = require('../models')
+const { User, IdempotencyKey, Order, Bill } = require('../models')
 const { sequelize } = require('../utils/db')
 
 router.post('/', async(req, res) => {

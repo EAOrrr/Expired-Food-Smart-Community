@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Tabs, Tab, Box, Typography, Card, CardContent } from '@mui/material'
+import { Tabs, Tab, Box, Typography, Card, CardContent, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import userService from '../services/user'
 
 const Profile = () => {
@@ -7,12 +7,20 @@ const Profile = () => {
   const [reviewsGiven, setReviewsGiven] = useState([])
   const [reviewsReceived, setReviewsReceived] = useState([])
   const [tabIndex, setTabIndex] = useState(0)
+  const [open, setOpen] = useState(false)
+  const [username, setUsername] = useState('')
+  const [phone, setPhone] = useState('')
+  const [address, setAddress] = useState('')
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const data = await userService.getInfo()
         setUserInfo(data)
+        setUsername(data.username)
+        setPhone(data.phone)
+        setAddress(data.address)
       } catch (error) {
         console.error('Failed to fetch user info:', error)
       }
@@ -46,6 +54,24 @@ const Profile = () => {
     setTabIndex(newValue)
   }
 
+  const handleOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleUpdateProfile = async () => {
+    try {
+      const updatedUser = await userService.update({ username, phone, address, password })
+      setUserInfo(updatedUser)
+      setOpen(false)
+    } catch (error) {
+      console.error('Failed to update user info:', error)
+    }
+  }
+
   if (!userInfo) {
     return <div>Loading...</div>
   }
@@ -62,8 +88,10 @@ const Profile = () => {
         <Box sx={{ p: 3 }}>
           <Card variant="outlined" sx={{ borderRadius: 2, boxShadow: 3, fontFamily: 'Noto Serif SC' }}>
             <CardContent>
+              <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>用户名：{userInfo.username}</Typography>
               <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>电话号码：{userInfo.phone}</Typography>
               <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>住址：{userInfo.address}</Typography>
+              <Button variant="outlined" onClick={handleOpen} sx={{ fontFamily: 'Noto Serif SC', marginTop: 2 }}>修改信息</Button>
             </CardContent>
           </Card>
         </Box>
@@ -92,6 +120,48 @@ const Profile = () => {
           ))}
         </Box>
       )}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>修改个人信息</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="用户名"
+            type="text"
+            fullWidth
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="电话号码"
+            type="text"
+            fullWidth
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="住址"
+            type="text"
+            fullWidth
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="密码"
+            type="password"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} sx={{ fontFamily: 'Noto Serif SC' }}>取消</Button>
+          <Button onClick={handleUpdateProfile} sx={{ fontFamily: 'Noto Serif SC' }}>保存</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

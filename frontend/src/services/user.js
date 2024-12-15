@@ -51,7 +51,6 @@ const getBills = async () => {
   return response.data
 }
 
-
 export default {
   getInfo,
   create,

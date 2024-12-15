@@ -116,22 +116,15 @@ const ProductPage = () => {
       <h1>商品详情</h1>
         <Paper elevation={3} style={{ padding: '20px' }}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
+              <CarouselSlide items={product.Images.map(img => `/api/images/${img.imageId}`)}/>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <Typography variant="h4">{product.name}</Typography>
-            </Grid>
-            <Grid item xs={12}>
               <Typography>{product.description}</Typography>
-            </Grid>
-            <Grid item xs={12}>
               <Typography>价格: ¥{product.price}</Typography>
-            </Grid>
-            <Grid item xs={12}>
               <Typography>库存: {product.stock}</Typography>
-            </Grid>
-            <Grid item xs={12}>
               <Typography>有效期: {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '无'}</Typography>
-            </Grid>
-            <Grid item xs={12}>
               <Box display="flex" alignItems="center">
                 <Typography>卖家: {product.Seller.username}</Typography>
                 <IconButton component={Link} to={`/users/${product.Seller.userId}`}>
@@ -140,19 +133,12 @@ const ProductPage = () => {
                   </Avatar>
                 </IconButton>
               </Box>
-            </Grid>
-            <Grid item xs={12}>
               <Count count={count} setCount={setCount} handleUpdate={handleUpdateValue}/>
-            </Grid>
-            <Grid item xs={12}>
               <Button variant="contained" color="primary" onClick={handleAddToCart} style={{ marginRight: '10px' }}>加入购物车</Button>
               <Button variant="contained" color="secondary" onClick={handlePurchase}>直接购买</Button>
-            </Grid>
-            <Grid item xs={12}>
               <DialogCheckout />
             </Grid>
           </Grid>
-          <CarouselSlide items={product.Images}/>
         </Paper>
     </Container>
   );

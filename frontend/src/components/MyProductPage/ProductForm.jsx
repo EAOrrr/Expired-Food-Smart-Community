@@ -82,7 +82,7 @@ const ProductForm = ({ product, onSubmit }) => {
     <>
     <Box component='form' onSubmit={handleSubmit}>
       <TextField {...name} fullWidth margin="dense"/>
-      <TextField {...description} fullWidth margin="dense"/>
+      <TextField {...description} fullWidth margin="dense" multiline/>
       <TextField {...price} fullWidth margin="dense"/>
       <TextField {...stock} fullWidth margin="dense"/>
       <TextField {...expiryDate} fullWidth margin="dense" />

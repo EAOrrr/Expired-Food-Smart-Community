@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Typography, Grid, Card, CardContent, Button, Checkbox } from '@mui/material'
-import
- cartsService from '../../services/carts'
+import { Box, Typography, Grid, Card, CardContent, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import cartsService from '../../services/carts'
 import { createNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
-
-/*
-  * 购物车页面
-  * TODO： 
-  * 增减购物车商品数量
-  * 删除购物车商品
-*/
+import Count from '../Count'
+import CheckoutTable from '../CheckoutTable'
 
 const Cart = () => {
   const [cart, setCart] = useState([])
   const [selectedCartItems, setSelectedCartItems] = useState([])
+  const [open, setOpen] = useState(false)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -30,14 +25,24 @@ const Cart = () => {
   }, [])
 
   const handleCheckout = async () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleConfirmCheckout = async () => {
     try {
       await cartsService.checkout(selectedCartItems)
       setCart(cart.filter(item => !selectedCartItems.includes(item.id)))
       setSelectedCartItems([])
       dispatch(createNotification('结算成功', 'success'))
+      setOpen(false)
     } catch (error) {
       console.error('Failed to checkout:', error)
       dispatch(createNotification('结算失败', 'error'))
+      setOpen(false)
     }
   }
 
@@ -49,6 +54,24 @@ const Cart = () => {
     )
   }
 
+  const handleUpdateQuantity = async (cartItemId, quantity) => {
+    try {
+      console.log(`Updating cart item ${cartItemId} with quantity ${quantity}`)
+      if (quantity === 0) {
+        await cartsService.remove(cartItemId)
+        setCart(cart.filter(item => item.id !== cartItemId))
+        dispatch(createNotification('商品已从购物车移除', 'success'))
+      } else {
+        const updatedCartItem = await cartsService.update(cartItemId, { quantity })
+        setCart(cart.map(item => item.id === cartItemId ? updatedCartItem : item))
+        dispatch(createNotification('购物车商品数量已更新', 'success'))
+      }
+    } catch (error) {
+      console.error('Failed to update cart item quantity:', error)
+      dispatch(createNotification('更新购物车商品数量失败', 'error'))
+    }
+  }
+
   return (
     <>
       <Box sx={{ p: 3 }}>
@@ -58,19 +81,22 @@ const Cart = () => {
         <Grid container spacing={3}>
           {cart.length > 0 ? (
             cart.map(cartItem => (
-              <Grid item key={cartItem.id} xs={12} sm={6} md={4}>
+              <Grid item key={cartItem.id} xs={12}>
                 <Card>
-                  <CardContent>
+                  <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Checkbox
                       checked={selectedCartItems.includes(cartItem.id)}
                       onChange={() => handleSelectCartItem(cartItem.id)}
                     />
-                    <Typography gutterBottom variant='h5' component='div'>
-                      {cartItem.Product.name}
-                    </Typography>
-                    <Typography variant='body2' color='text.secondary'>
-                      数量: {cartItem.quantity}
-                    </Typography>
+                    <Box sx={{ flexGrow: 1, ml: 2 }}>
+                      <Typography gutterBottom variant='h5' component='div'>
+                        {cartItem.Product.name}
+                      </Typography>
+                      <Typography variant='body2' color='text.secondary'>
+                        价格: ¥{cartItem.Product.price}
+                      </Typography>
+                    </Box>
+                    <Count count={cartItem.quantity} setCount={(count) => handleUpdateQuantity(cartItem.id, count)} handleNegative={() => handleUpdateQuantity(cartItem.id, 0)} />
                   </CardContent>
                 </Card>
               </Grid>
@@ -82,6 +108,16 @@ const Cart = () => {
           )}
         </Grid>
         <Button onClick={handleCheckout} disabled={selectedCartItems.length === 0}>结算</Button>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>账单确认</DialogTitle>
+          <DialogContent>
+            <CheckoutTable products={cart.filter(item => selectedCartItems.includes(item.id)).map(item => ({ ...item.Product, quantity: item.quantity }))} />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>取消</Button>
+            <Button onClick={handleConfirmCheckout}>确认</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </>
   )

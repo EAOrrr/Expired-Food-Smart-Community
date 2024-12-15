@@ -1,35 +1,37 @@
 import React, { useEffect, useState } from 'react'
 import userService from '../services/user'
+import Loading from './Loading'
 
 const BillsPage = () => {
-  const [bills, setBills] = useState([])
-  const [balance, setBalance] = useState(0)
+  const [user, setUser] = useState(null)
+  console.log(user)
 
   useEffect(() => {
     const fetchBills = async () => {
-      const fetchedBills = await userService.getBills()
-      setBills(fetchedBills)
-      if (fetchedBills.length > 0) {
-        setBalance(fetchedBills[0].balance)
-      }
+      const fetchedUserWithBills = await userService.getBills()
+      console.log('fetchedUserWithBills:', fetchedUserWithBills)
+      setUser(fetchedUserWithBills)
     }
     fetchBills()
   }, [])
+  
+  if (!user) {
+    return <Loading message='用户账单加载中'/>
+  }
 
   return (
     <div>
       <h2>账单</h2>
-      <p>当前余额: {balance}</p>
+      <p>当前余额: {user.balance}</p>
       <ul>
-        {bills.map(bill => (
+        {user.Bills.map(bill => (
           <li key={bill.id}>
             <p>金额: {bill.amount}</p>
             <p>操作: {bill.operation}</p>
             <p>创建时间: {new Date(bill.createdAt).toLocaleString()}</p>
-            <p>备注: {bill.note}</p>
-            <p>余额: {bill.balance}</p>
           </li>
         ))}
+        
       </ul>
     </div>
   )

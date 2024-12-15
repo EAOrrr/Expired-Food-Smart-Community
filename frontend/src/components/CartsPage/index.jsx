@@ -99,8 +99,8 @@ const Cart = () => {
   return (
     <>
       <Box sx={{ p: 3 }}>
-        <Typography variant='h4' gutterBottom>
-          购物车
+        <Typography variant='h4' gutterBottom sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>
+          我的购物车
         </Typography>
         <Grid container spacing={3}>
           {cart.length > 0 ? (
@@ -114,20 +114,24 @@ const Cart = () => {
               />
             ))
           ) : (
-            <Typography variant='body2' color='text.secondary'>
+            <Typography variant='body2' color='text.secondary' sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>
               购物车为空
             </Typography>
           )}
         </Grid>
-        <Button onClick={handleCheckout} disabled={selectedCartItems.length === 0}>结算</Button>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+          <Button variant="contained" onClick={handleCheckout} disabled={selectedCartItems.length === 0} sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>
+            结算
+          </Button>
+        </Box>
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>账单确认</DialogTitle>
+          <DialogTitle sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>账单确认</DialogTitle>
           <DialogContent>
             <CheckoutTable products={cart.filter(item => selectedCartItems.includes(item.cartId)).map(item => ({ ...item.Product, quantity: item.quantity }))} />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>取消</Button>
-            <Button onClick={handleConfirmCheckout}>确认</Button>
+            <Button onClick={handleClose} sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>取消</Button>
+            <Button onClick={handleConfirmCheckout} sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>确认</Button>
           </DialogActions>
         </Dialog>
       </Box>

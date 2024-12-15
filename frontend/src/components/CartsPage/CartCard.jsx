@@ -15,25 +15,23 @@ const CartCard = ({ cartItem, selectedCartItems, handleSelectCartItem, handleUpd
 
   return (
     <Grid item xs={12}>
-      <Card>
-        <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Checkbox
-            checked={selectedCartItems.includes(cartItem.cartId)}
-            onChange={() => handleSelectCartItem(cartItem.cartId)}
-          />
-          <Box sx={{ flexGrow: 1, ml: 2 }}>
-            <Typography gutterBottom variant='h5' component='div'>
-              {cartItem.Product.name}
-            </Typography>
-            <Typography variant='body2' color='text.secondary'>
-              价格: ¥{cartItem.Product.price}
-            </Typography>
+      <Card variant="outlined" sx={{ marginBottom: 1, borderRadius: 2, boxShadow: 3, fontFamily: 'Noto Serif SC' }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Checkbox
+              checked={selectedCartItems.includes(cartItem.cartId)}
+              onChange={() => handleSelectCartItem(cartItem.cartId)}
+            />
+            <Box sx={{ flexGrow: 1, ml: 2 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Noto Serif SC' }}>{cartItem.Product.name}</Typography>
+              <Typography variant="body1" gutterBottom sx={{ fontFamily: 'Noto Serif SC' }}>价格: ¥{cartItem.Product.price}</Typography>
+            </Box>
+            <Count
+              count={value}
+              setCount={setValue}
+              handleUpdate={handleUpdate}
+            />
           </Box>
-          <Count
-            count={value}
-            setCount={setValue}
-            handleUpdate={handleUpdate}
-          />
         </CardContent>
       </Card>
     </Grid>

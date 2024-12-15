@@ -1,5 +1,6 @@
 import { Box, IconButton } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
+import PropTypes from 'prop-types'
 
 const Picture = ({ imageUrl, handleDelete }) => {
   const onDelete = () => {
@@ -41,6 +42,10 @@ const Picture = ({ imageUrl, handleDelete }) => {
       </IconButton>
     </Box>
   )
+}
+Picture.propTypes = {
+  imageUrl: PropTypes.string.isRequired,
+  handleDelete: PropTypes.func.isRequired,
 }
 
 export default Picture

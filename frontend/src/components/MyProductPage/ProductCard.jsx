@@ -1,6 +1,5 @@
-import { Grid2 as Grid, Card, CardContent, Typography, Button, CardActionArea, CardMedia, CardActions, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Grid2 as Grid, Card, CardContent, Typography, CardActionArea, CardMedia, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import ProductForm from './ProductForm';
 import productsService from '../../services/products';

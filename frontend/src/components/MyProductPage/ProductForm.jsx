@@ -67,7 +67,7 @@ const ProductForm = ({ product, onSubmit }) => {
       formData.append('cover', cover)
     }
     newImages.forEach(image => {
-      formData.append('images', image)
+      formData.append('', image)
     })
     formData.append('deletedImages', JSON.stringify(deletedImages))
     onSubmit(formData)

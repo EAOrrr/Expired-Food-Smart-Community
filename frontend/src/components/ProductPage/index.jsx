@@ -123,11 +123,11 @@ const ProductPage = () => {
               <Typography>库存: {product.stock}</Typography>
               <Typography>有效期: {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '无'}</Typography>
               <Box display="flex" alignItems="center">
-                <Typography>卖家: {product.Seller.username}</Typography>
                 <IconButton component={Link} to={`/users/${product.Seller.userId}`}>
-                  <Avatar sx={{ bgcolor: deepOrange[500], marginLeft: '10px' }}>
+                  <Avatar sx={{ bgcolor: deepOrange[500] }}>
                     {product.Seller.username[0]}
                   </Avatar>
+                <Typography>卖家: {product.Seller.username}</Typography>
                 </IconButton>
               </Box>
               <Count count={count} setCount={setCount} handleUpdate={handleUpdateValue}/>

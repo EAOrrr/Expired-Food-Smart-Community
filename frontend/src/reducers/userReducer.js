@@ -10,9 +10,6 @@ import loginService from '../services/login'
 import userService from '../services/user'
 import storage from '../services/storage'
 
-// TODO: user info update
-
-
 const userSlice = createSlice({
   name: 'user',
   initialState: {
@@ -36,6 +33,12 @@ const userSlice = createSlice({
       return {
         ...state,
         loading: action.payload
+      }
+    },
+    updateUser(state, action) {
+      return {
+        ...state,
+        info: action.payload
       }
     },
   }
@@ -78,12 +81,25 @@ export const initializeUser = () => {
       dispatch(setUser(user))
       dispatch(setUserStatus(false))
     } catch (exception) {
+      // Attempt to refresh token or re-authenticate
+      
       storage.clearUser()
       dispatch(clearUser())
+      dispatch(setUserStatus(false))
     }
   }
 }
 
+export const refetchUserInfo = () => {
+  return async dispatch => {
+    try {
+      const user = await userService.getInfo()
+      dispatch(setUser(user))
+    } catch (exception) {
+      console.error('Failed to update user info:', exception)
+    }
+  }
+}
 
-export const { setUser, clearUser, setUserStatus } = userSlice.actions
+export const { setUser, clearUser, setUserStatus, updateUser } = userSlice.actions
 export default userSlice.reducer

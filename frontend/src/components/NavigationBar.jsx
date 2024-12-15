@@ -23,7 +23,7 @@ const pages = [
   { label: '商品查看', href: '/shopping' },
   { label: '我的购物车', href: '/carts' },
   { label: '我的订单', href: '/orders' },
-  { label: '其他功能', href: '/other' }
+  { label: '我的商品', href: '/my-products' }
 ]
 const settings = [
   { label: '个人信息', href: '/profile' },

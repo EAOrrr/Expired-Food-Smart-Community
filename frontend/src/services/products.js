@@ -3,8 +3,8 @@ import axios from "axios";
 const baseUrl = "/api/products";
 
 // Returns a list of all products
-const getAll = async () => {
-  const response = await axios.get(baseUrl);
+const getAll = async (query) => {
+  const response = await axios.get(baseUrl, { params: query });
   return response.data;
 }
 

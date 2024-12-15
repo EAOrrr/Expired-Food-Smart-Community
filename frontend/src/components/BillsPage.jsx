@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import userService from '../services/user'
+// import userService from '../services/user'
+import billService from '../services/bills'
 import Loading from './Loading'
+import { useSelector } from 'react-redux'
 
 const BillsPage = () => {
-  const [user, setUser] = useState(null)
-  console.log(user)
+  const [bills, setBills] = useState([])
+  const user = useSelector(state => state.user.info)
 
   useEffect(() => {
     const fetchBills = async () => {
-      const fetchedUserWithBills = await userService.getBills()
-      console.log('fetchedUserWithBills:', fetchedUserWithBills)
-      setUser(fetchedUserWithBills)
+      const bills = await billService.getAll()
+      console.log(bills)
+      setBills(bills)
     }
     fetchBills()
   }, [])
@@ -24,7 +26,7 @@ const BillsPage = () => {
       <h2>账单</h2>
       <p>当前余额: {user.balance}</p>
       <ul>
-        {user.Bills.map(bill => (
+        {bills.map(bill => (
           <li key={bill.id}>
             <p>金额: {bill.amount}</p>
             <p>操作: {bill.operation}</p>

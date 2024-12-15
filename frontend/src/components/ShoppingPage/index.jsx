@@ -5,6 +5,7 @@ import cartsService from '../../services/carts'
 import { createNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 import ProductCard from './ProductCard'
+import ProductList from './ProductList'
 
 /*
   * 商品页面
@@ -24,10 +25,11 @@ const ShoppingPage = () => {
         setProducts(products)
       } catch (error) {
         console.error('Failed to fetch products:', error) // 添加错误日志
+        dispatch(createNotification('获取商品失败', 'error'))
       }
     }
     fetchProducts()
-  }, [])
+  }, [dispatch])
 
 
 
@@ -37,18 +39,7 @@ const ShoppingPage = () => {
         <Typography variant='h4' gutterBottom>
           商品列表
         </Typography>
-      <Grid container spacing={2}>
-          {products.length > 0 ? (
-            products.map(product => (
-              <ProductCard key={product.productId} product={product} />
-              
-            ))
-          ) : (
-            <Typography variant='body2' color='text.secondary'>
-              暂无商品
-            </Typography>
-          )}
-        </Grid>
+        <ProductList products={products} />
       </Box>
     </>
   )

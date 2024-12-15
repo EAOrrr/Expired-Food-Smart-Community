@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import productsService from "../../services/products";
 import cartsService from "../../services/carts";
 import ordersService from "../../services/orders";
 import { createNotification } from "../../reducers/notificationReducer";
+import { refetchUserInfo } from "../../reducers/userReducer";
 import Count from "../Count";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Box, IconButton, Avatar, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle,  Box, IconButton, Avatar, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { deepOrange } from "@mui/material/colors";
+import CheckoutTable from "../CheckoutTable";
 
 /*
 TODO:
@@ -19,6 +21,7 @@ TODO:
 const ProductPage = () => {
   const id = useParams().id;
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const [product, setProduct] = useState(null);
   const [cart, setCart] = useState(null);
   const [count, setCount] = useState(0);
@@ -69,8 +72,10 @@ const ProductPage = () => {
     try {
       const newOrder = await ordersService.createByProduct({ productId: product.productId, quantity: count });
       console.log('Order created:', newOrder);
-      dispatch(createNotification('订单已生成', 'success'));
       setOpen(false);
+      dispatch(createNotification('订单已生成', 'success'));
+      dispatch(refetchUserInfo());
+      navigate('/orders');
     } catch (error) {
       console.error('Failed to create order:', error);
       dispatch(createNotification('订单生成失败', 'error'));
@@ -82,28 +87,7 @@ const ProductPage = () => {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>账单确认</DialogTitle>
       <DialogContent>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell>商品名称</TableCell>
-                <TableCell>{product.name}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>单价</TableCell>
-                <TableCell>¥{product.price}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>数量</TableCell>
-                <TableCell>{count}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>总价</TableCell>
-                <TableCell>¥{product.price * count}</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <CheckoutTable products={[{ ...product, quantity: count }]} />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>取消</Button>

@@ -5,6 +5,7 @@ const multer = require('multer');
 const upload = multer();
 
 router.get('/', async (req, res) => {
+  const userId = req.query.userId;
   const products = await Product.findAll({
     include: [{
       model: User,
@@ -14,13 +15,13 @@ router.get('/', async (req, res) => {
     {
       model: Image,
       as: 'Images',
-      attributes: ['imageId'],
-      where: { isCover: true },
+      attributes: ['imageId', 'isCover'],
       required: false
     }],
     attributes: {
       exclude: ['sellerId']
-    }
+    },
+    where: userId ? { sellerId: userId } : {}
   });
   res.json(products);
 })
@@ -57,14 +58,24 @@ router.post('/', userExtractor, upload.fields([
     }
   }
 
-  res.status(201).json(product);
+  const createdProduct = await Product.findByPk(product.productId, {
+    include: [
+      {
+        model: Image,
+        as: 'Images',
+        attributes: ['imageId', 'isCover']
+      }
+    ]
+  });
+
+  res.status(201).json(createdProduct);
 })
 
 router.get('/:id', userExtractor, async (req, res) => {
   const { id } = req.params;
   const product = await Product.findByPk(id, {
     include: [
-      { model: Image, as: 'Images', attributes: ['imageId'] },
+      { model: Image, as: 'Images', attributes: ['imageId', 'isCover'] },
       { model: Cart, as: 'Carts',  where: { userId: req.user.userId }, required: false },
     { model: User, as: 'Seller', attributes: ['username', 'userId'] }
     ]
@@ -92,7 +103,7 @@ router.get('/:id', userExtractor, async (req, res) => {
 
 router.put('/:id', userExtractor, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'images', maxCount: 8 }]), async (req, res) => {
   const { id } = req.params;
-  const { name, price, description, stock, expiryDate } = req.body;
+  const { name, price, description, stock, expiryDate, deletedImages } = req.body;
   const files = req.files;
 
   const product = await Product.findByPk(id);
@@ -108,10 +119,16 @@ router.put('/:id', userExtractor, upload.fields([{ name: 'cover', maxCount: 1 },
   product.expiryDate = expiryDate || product.expiryDate;
   await product.save();
 
+  // 删除指定的图片
+  if (Array.isArray(deletedImages) && deletedImages.length > 0) {
+    await Image.destroy({ where: { imageId: deletedImages, productId: id } });
+  }
+
   const existingImagesCount = await Image.count({ where: { productId: id } });
 
   // 更新封面图片
   if (files.cover) {
+    const coverFile = files.cover[0];
     const existingCover = await Image.findOne({ where: { productId: id, isCover: true } });
     if (existingCover) {
       existingCover.data = coverFile.buffer;
@@ -142,7 +159,18 @@ router.put('/:id', userExtractor, upload.fields([{ name: 'cover', maxCount: 1 },
     await Image.bulkCreate(images);
   }
 
-  res.json(product);
+  // res.json(product);
+  const updatedProduct = await Product.findByPk(id, {
+      include: [
+        {
+          model: Image,
+          as: 'Images',
+          attributes: ['imageId', 'isCover']
+        }
+      ]
+    });
+
+    res.json(updatedProduct);
 });
 
 

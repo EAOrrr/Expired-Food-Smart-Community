@@ -179,21 +179,5 @@ router.post('/me/deposit', userExtractor, async (req, res) => {
     }
 })
 
-router.get('/me/bills', userExtractor, async (req, res) => {
-  const user = req.user
-  // const bills = await user.getBills({
-  //   order: [['createdAt', 'DESC']]
-  // })
-  const userWithBill = await User.findByPk(user.userId, {
-    include: {
-      model: Bill,
-      as: 'Bills',
-      order: [['createdAt', 'DESC']],
-      required: false
-    },
-    attributes: { exclude: ['passwordHash'] }
-  })
-  res.status(200).json(userWithBill)
-})
 
 module.exports = router

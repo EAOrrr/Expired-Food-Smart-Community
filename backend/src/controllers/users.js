@@ -26,39 +26,46 @@ router.post('/', async(req, res) => {
 })
 
 router.get('/me', userExtractor, async (req, res) => {
-  try {
-    const user = req.user
-    const { review } = req.query
-    if (review) {
-      const order = [['createdAt', 'DESC'], ['reviewId', 'DESC']] 
-      if (review === 'given') {
-        user.reviews = {
-          given: await user.getReviewsGiven({
-            order: order
-          })
-        }
-      }
-      if (review === 'received') {
-        user.reviews = {
-          received: await user.getReviewsReceived({
-            order: order
-          })
-        }
-      }
-      if (review === 'both') {
-        user.reviews = {
-          given: await user.getReviewsGiven({ order: order }),
-          received: await user.getReviewsReceived({ order: order })
-        }
+  const user = req.user
+  const { review } = req.query
+  console.log(review)
+  if (review) {
+    const order = [['createdAt', 'DESC'], ['reviewId', 'DESC']] 
+    if (review === 'given') {
+      const givenReviews = await user.getReviewsGiven({
+        order: order
+      })
+      user.reviews = {
+        given: givenReviews
       }
     }
-    delete user.passwordHash
-    res.status(200).json(user)
-  } catch (error) {
-    console.error('Failed to fetch user info:', error)
-    res.status(500).json({ error: 'Failed to fetch user info' })
+    if (review === 'received') {
+      const receivedReviews = await user.getReviewsReceived({
+        order: order
+      })
+      user.reviews = {
+        received: receivedReviews
+      }
+      console.log(user.reviews)
+    }
+    if (review === 'both') {
+      const givenReviews = await user.getReviewsGiven({
+        order: order
+      })
+      const receivedReviews = await user.getReviewsReceived({
+        order: order
+      })
+      user.reviews = {
+      given: givenReviews,
+      received: receivedReviews
+      }
+    }
   }
+  delete user.passwordHash
+  console.log(user.toJSON())
+  res.status(200).json(user)
 })
+
 
 router.get('/:userid', userExtractor, async (req, res) => {
   const { userid } = req.params

@@ -27,7 +27,7 @@ const pages = [
 ]
 const settings = [
   { label: '个人信息', href: '/profile' },
-  { label: '查看余额', href: '/balance' },
+  { label: '查看余额', href: '/bills' },
   { label: '设置', href: '/settings' }
 ]
 

@@ -19,7 +19,6 @@ const Profile = () => {
     const fetchReviews = async () => {
       try {
         const givenData = await userService.getInfo({ review: 'given' })
-        console.log(givenData)
         if (givenData.reviews && givenData.reviews.given) {
           setReviewsGiven(givenData.reviews.given)
         } else {

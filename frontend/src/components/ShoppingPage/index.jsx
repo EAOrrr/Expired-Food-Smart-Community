@@ -21,7 +21,6 @@ const ShoppingPage = () => {
     const fetchProducts = async () => {
       try {
         const products = await productsService.getAll()
-        console.log('Fetched products:', products) // 添加日志
         setProducts(products)
       } catch (error) {
         console.error('Failed to fetch products:', error) // 添加错误日志

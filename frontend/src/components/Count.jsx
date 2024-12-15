@@ -4,7 +4,14 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
 const Count = ({ count, setCount, handleUpdate }) => {
+  console.log('count', count);
   const handleIncrement = () => {
+    if (handleUpdate) {
+      const shouldSet = handleUpdate(parseInt(count) + 1);
+      if (!shouldSet) {
+        return;
+      }
+    }
     setCount(parseInt(count) + 1);
   }
 

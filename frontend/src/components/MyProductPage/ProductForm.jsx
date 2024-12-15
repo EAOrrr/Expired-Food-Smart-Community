@@ -74,10 +74,6 @@ const ProductForm = ({ product, onSubmit }) => {
   }
 
   
-  console.log(product)
-  console.log(cover)
-  console.log(newImages)
-  console.log(coverPreview)
   return (
     <>
     <Box component='form' onSubmit={handleSubmit}>

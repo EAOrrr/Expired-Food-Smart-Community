@@ -76,7 +76,6 @@ const ProductPage = () => {
     // Add logic to handle purchase confirmation
     try {
       const newOrder = await ordersService.createByProduct({ productId: product.productId, quantity: count });
-      console.log('Order created:', newOrder);
       setOpen(false);
       dispatch(createNotification('订单已生成', 'success'));
       dispatch(refetchUserInfo());
@@ -102,8 +101,6 @@ const ProductPage = () => {
     </Dialog>
   );
 
-  console.log(cart)
-  console.log(product)
   if (!product) {
     return (
       <Container>

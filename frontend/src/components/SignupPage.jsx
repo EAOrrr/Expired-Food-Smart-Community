@@ -83,10 +83,7 @@ const SignUp = () => {
       navigate('/login')
     }
     catch (exception) {
-      console.log(exception)
       if (exception.isAxiosError) {
-        console.log('Axios error')
-        console.log(exception.response.data.error)
         dispatch(createNotification(exception.response.data.error, 'error'))
       }
       else {

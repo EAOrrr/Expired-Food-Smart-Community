@@ -37,10 +37,6 @@ const userSlice = createSlice({
       }
     },
     updateUser(state, action) {
-      console.log({
-        ...user.info,
-        ...action.payload
-      })
       return {
         ...state,
         info: {

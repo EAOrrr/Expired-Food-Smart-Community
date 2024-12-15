@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 
 
 const ProductCard = ({ product }) => {
-  console.log(product)
   return (
     <Grid item id={product.productId}  size={{ xs: 12, md: 4 }}>
       <Card>

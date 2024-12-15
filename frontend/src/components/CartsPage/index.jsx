@@ -7,6 +7,8 @@ import { useDispatch } from 'react-redux'
 import Count from '../Count'
 import { refetchUserInfo } from "../../reducers/userReducer";
 import CheckoutTable from '../CheckoutTable'
+import CartCard from './CartCard'
+import { useNavigate } from 'react-router-dom'
 
 
 // 1. Count 组件: [value, setValue] = useState(number), handleUpdate = (value) => boolean
@@ -18,6 +20,7 @@ const Cart = () => {
   const [selectedCartItems, setSelectedCartItems] = useState([])
   const [open, setOpen] = useState(false)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const fetchCart = async () => {
     try {
@@ -55,6 +58,7 @@ const Cart = () => {
       dispatch(createNotification('结算成功', 'success'))
       dispatch(refetchUserInfo())
       setOpen(false)
+      navigate('/orders')
     } catch (error) {
       console.error('Failed to checkout:', error)
       console.error('Error details:', error.response ? error.response.data : error.message)
@@ -71,44 +75,26 @@ const Cart = () => {
     )
   }
 
-  const handleUpdateQuantity = async (cartItemId, quantity) => {
+  const handleUpdateQuantity = (cartItemId, quantity) => {
     try {
       console.log(`Updating cart item ${cartItemId} with quantity ${quantity}`)
+      setCart(prevCart =>
+        prevCart.map(item =>
+          item.cartId === cartItemId ? { ...item, quantity } : item
+        ).filter(item => item.quantity > 0)
+      )
+      dispatch(createNotification(quantity === 0 ? '商品已从购物车移除' : '购物车商品数量已更新', 'success'))
       if (quantity === 0) {
-        await cartsService.remove(cartItemId)
-        dispatch(createNotification('商品已从购物车移除', 'success'))
+        cartsService.remove(cartItemId)
       } else {
-        await cartsService.update(cartItemId, { quantity })
-        dispatch(createNotification('购物车商品数量已更新', 'success'))
+        cartsService.update(cartItemId, { quantity })
       }
-      await fetchCart() // 更新购物车后重新获取数据
+      dispatch(refetchUserInfo())
     } catch (error) {
       console.error('Failed to update cart item quantity:', error)
       dispatch(createNotification('更新购物车商品数量失败', 'error'))
     }
   }
-
-  const CartCard = ({ cartItem, selectedCartItems, handleSelectCartItem, handleUpdateQuantity }) => (
-    <Grid item key={cartItem.cartId} xs={12}>
-      <Card>
-        <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Checkbox
-            checked={selectedCartItems.includes(cartItem.cartId)}
-            onChange={() => handleSelectCartItem(cartItem.cartId)}
-          />
-          <Box sx={{ flexGrow: 1, ml: 2 }}>
-            <Typography gutterBottom variant='h5' component='div'>
-              {cartItem.Product.name}
-            </Typography>
-            <Typography variant='body2' color='text.secondary'>
-              价格: ¥{cartItem.Product.price}
-            </Typography>
-          </Box>
-          <Count count={cartItem.quantity} setCount={(count) => handleUpdateQuantity(cartItem.cartId, count)} handleNegative={() => handleUpdateQuantity(cartItem.cartId, 0)} />
-        </CardContent>
-      </Card>
-    </Grid>
-  )
 
   return (
     <>
@@ -124,7 +110,7 @@ const Cart = () => {
                 cartItem={cartItem}
                 selectedCartItems={selectedCartItems}
                 handleSelectCartItem={handleSelectCartItem}
-                handleUpdateQuantity={handleUpdateQuantity}
+                handleUpdateQuantity={(value) => handleUpdateQuantity(cartItem.cartId, value)}
               />
             ))
           ) : (

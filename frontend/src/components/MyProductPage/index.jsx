@@ -51,7 +51,7 @@ const MyProductPage = () => {
   }
 
   return (
-    <div>
+    <div style={{ fontFamily: 'Noto Serif SC' }}>
       <h1>我的商品</h1>
       <Button variant="contained" onClick={handleOpen}>创建商品</Button>
       <Dialog open={open} onClose={handleClose}>

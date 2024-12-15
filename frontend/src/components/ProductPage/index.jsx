@@ -6,10 +6,11 @@ import ordersService from "../../services/orders";
 import { createNotification } from "../../reducers/notificationReducer";
 import { refetchUserInfo, updateUser } from "../../reducers/userReducer";
 import Count from "../Count";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle,  Box, IconButton, Avatar, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Box, IconButton, Avatar, Typography, Container, Grid, Paper } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { deepOrange } from "@mui/material/colors";
 import CheckoutTable from "../CheckoutTable";
+import CarouselSlide from "./CarouselSlide";
 
 /*
 TODO:
@@ -103,38 +104,57 @@ const ProductPage = () => {
 
   console.log(cart)
   console.log(product)
+  if (!product) {
+    return (
+      <Container>
+        <Typography>商品不存在</Typography>
+      </Container>
+    );
+  }
   return (
-    <div>
-      <h1>Product Page</h1>
-      {product ? (
-        <div key={product.productId}>
-          <h2>{product.name}</h2>
-          <p>{product.description}</p>
-          <p>价格: ¥{product.price}</p>
-          <p>库存: {product.stock}</p>
-          <p>有效期: {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '无'}</p>
-          <Box>
-            <Typography>卖家: {product.Seller.username}</Typography>
-            <IconButton component={Link} to={`/users/${product.Seller.userId}`}>
-              <Avatar sx={{ bgcolor: deepOrange[500] }}>
-                {product.Seller.username[0]}
-            </Avatar>
-          </IconButton>
-          </Box>
-          <Count count={count} setCount={setCount} handleUpdate={handleUpdateValue}/>
-          <Button onClick={handleAddToCart}>加入购物车</Button>
-          <Button onClick={handlePurchase}>直接购买</Button>
-          <DialogCheckout />
-          {product.Images.map((image) => {
-            return (
-            <img key={image.ImageId} src={`/api/images/${image.imageId}`} />
-            )
-          })}
-        </div>
-      ) : (
-        <p>商品不存在</p>
-      )}
-    </div>
+    <Container style={{ fontFamily: 'Noto Serif SC' }}>
+      <h1>商品详情</h1>
+        <Paper elevation={3} style={{ padding: '20px' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="h4">{product.name}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography>{product.description}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography>价格: ¥{product.price}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography>库存: {product.stock}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography>有效期: {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '无'}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Box display="flex" alignItems="center">
+                <Typography>卖家: {product.Seller.username}</Typography>
+                <IconButton component={Link} to={`/users/${product.Seller.userId}`}>
+                  <Avatar sx={{ bgcolor: deepOrange[500], marginLeft: '10px' }}>
+                    {product.Seller.username[0]}
+                  </Avatar>
+                </IconButton>
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+              <Count count={count} setCount={setCount} handleUpdate={handleUpdateValue}/>
+            </Grid>
+            <Grid item xs={12}>
+              <Button variant="contained" color="primary" onClick={handleAddToCart} style={{ marginRight: '10px' }}>加入购物车</Button>
+              <Button variant="contained" color="secondary" onClick={handlePurchase}>直接购买</Button>
+            </Grid>
+            <Grid item xs={12}>
+              <DialogCheckout />
+            </Grid>
+          </Grid>
+          <CarouselSlide items={product.Images}/>
+        </Paper>
+    </Container>
   );
 }
 

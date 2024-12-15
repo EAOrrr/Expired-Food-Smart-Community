@@ -1,33 +1,41 @@
-import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import React from 'react';
+import Carousel from 'react-material-ui-carousel'
+import { Paper, Button } from '@mui/material'
 
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import Count from './Count';
+function Example(props)
+{
+    var items = [
+        {
+            name: "Random Name #1",
+            description: "Probably the most random thing you have ever seen!"
+        },
+        {
+            name: "Random Name #2",
+            description: "Hello World!"
+        }
+    ]
 
-const NumberInput = () => {
-  const [number, setNumber] = useState(0);
+    return (
+        <Carousel>
+            {
+                items.map( (item, i) => <Item key={i} item={item} /> )
+            }
+        </Carousel>
+    )
+}
 
-  const handleChange = (event) => {
-    setNumber(event.target.value);
-  };
+function Item(props)
+{
+    return (
+        <Paper>
+            <h2>{props.item.name}</h2>
+            <p>{props.item.description}</p>
 
-  return (
-    <>
-    <Count count={number} setCount={setNumber} />
-    <TextField
-      label="Number"
-      type="number"
-      value={number}
-      onChange={handleChange}
-      InputLabelProps={{
-        shrink: true,
-      }}
-      variant="outlined"
-    />
-    </>
-  );
-};
+            <Button className="CheckButton">
+                Check it out!
+            </Button>
+        </Paper>
+    )
+}
 
-export default NumberInput;
+export default Example

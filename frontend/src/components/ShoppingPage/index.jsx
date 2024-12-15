@@ -35,10 +35,10 @@ const ShoppingPage = () => {
 
   return (
     <>
-      <Box sx={{ p: 3 }}>
-        <Typography variant='h4' gutterBottom>
+      <Box sx={{fontFamily: 'Noto Serif SC' }}>
+        <h1> 
           商品列表
-        </Typography>
+        </h1>
         <ProductList products={products} />
       </Box>
     </>

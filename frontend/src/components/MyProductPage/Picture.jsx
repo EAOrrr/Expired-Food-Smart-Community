@@ -16,7 +16,10 @@ const Picture = ({ imageUrl, handleDelete }) => {
       justifyContent: 'center',
       alignItems: 'center',
       position: 'relative',
-    }}>
+      fontFamily: 'Noto Serif SC'
+    }}
+    >
+
       <img
         src={imageUrl}
         alt='cover'

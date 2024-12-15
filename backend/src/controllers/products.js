@@ -65,7 +65,8 @@ router.get('/:id', userExtractor, async (req, res) => {
   const product = await Product.findByPk(id, {
     include: [
       { model: Image, as: 'Images', attributes: ['imageId'] },
-      { model: Cart, as: 'Carts',  where: { userId: req.user.userId }, required: false }
+      { model: Cart, as: 'Carts',  where: { userId: req.user.userId }, required: false },
+    { model: User, as: 'Seller', attributes: ['username', 'userId'] }
     ]
   });
   if (!product) {

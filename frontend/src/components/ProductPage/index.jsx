@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import productsService from "../../services/products";
 import cartsService from "../../services/carts";
 import ordersService from "../../services/orders";
 import { createNotification } from "../../reducers/notificationReducer";
 import Count from "../Count";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableContainer, TableRow, Paper } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Box, IconButton, Avatar, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
+import { deepOrange } from "@mui/material/colors";
 
 /*
 TODO:
@@ -123,7 +124,14 @@ const ProductPage = () => {
           <p>价格: ¥{product.price}</p>
           <p>库存: {product.stock}</p>
           <p>有效期: {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '无'}</p>
-          <p>卖家ID: {product.sellerId}</p>
+          <Box>
+            <Typography>卖家: {product.Seller.username}</Typography>
+            <IconButton component={Link} to={`/users/${product.Seller.userId}`}>
+              <Avatar sx={{ bgcolor: deepOrange[500] }}>
+                {product.Seller.username[0]}
+            </Avatar>
+          </IconButton>
+          </Box>
           <Count count={count} setCount={setCount} />
           <Button onClick={handleAddToCart}>加入购物车</Button>
           <Button onClick={handlePurchase}>直接购买</Button>

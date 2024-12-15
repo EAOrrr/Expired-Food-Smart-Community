@@ -44,7 +44,7 @@ router.get('/me', userExtractor, async (req, res) => {
         order: order
       })
       user.reviews = {
-        received: receivedReviews
+        received: receivedReviews.map(review => review.toJSON())
       }
       console.log(user.reviews)
     }
@@ -62,8 +62,9 @@ router.get('/me', userExtractor, async (req, res) => {
     }
   }
   delete user.passwordHash
-  console.log(user.toJSON())
-  res.status(200).json(user)
+  const userJson = user.toJSON()
+  userJson.reviews = user.reviews
+  res.status(200).json(userJson)
 })
 
 

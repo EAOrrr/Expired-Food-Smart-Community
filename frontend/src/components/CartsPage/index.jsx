@@ -49,10 +49,7 @@ const Cart = () => {
     console.log('Selected cart items:', selectedCartItems)
 
     try {
-      await orderSerivce.createByCart(selectedCartItems)
-      // for (const cartItemId of selectedCartItems) {
-      //   await cartsService.remove(cartItemId)
-      // }
+      await orderSerivce.createByCart({ cartIds: selectedCartItems })
       setCart(cart.filter(item => !selectedCartItems.includes(item.cartId)))
       setSelectedCartItems([])
       dispatch(createNotification('结算成功', 'success'))
@@ -65,7 +62,6 @@ const Cart = () => {
       setOpen(false)
     }
   }
-
 
   const handleSelectCartItem = (cartItemId) => {
     setSelectedCartItems(prevSelected =>

@@ -5,6 +5,7 @@ import orderSerivce from '../../services/orders'
 import { createNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 import Count from '../Count'
+import { refetchUserInfo } from "../../reducers/userReducer";
 import CheckoutTable from '../CheckoutTable'
 
 
@@ -18,15 +19,16 @@ const Cart = () => {
   const [open, setOpen] = useState(false)
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const cartItems = await cartsService.getAll()
-        setCart(cartItems)
-      } catch (error) {
-        console.error('Failed to fetch cart items:', error)
-      }
+  const fetchCart = async () => {
+    try {
+      const cartItems = await cartsService.getAll()
+      setCart(cartItems)
+    } catch (error) {
+      console.error('Failed to fetch cart items:', error)
     }
+  }
+
+  useEffect(() => {
     fetchCart()
   }, [])
 
@@ -39,18 +41,31 @@ const Cart = () => {
   }
 
   const handleConfirmCheckout = async () => {
+    if (selectedCartItems.length === 0) {
+      dispatch(createNotification('请选择至少一个商品进行结算', 'error'))
+      return
+    }
+
+    console.log('Selected cart items:', selectedCartItems)
+
     try {
       await orderSerivce.createByCart(selectedCartItems)
+      // for (const cartItemId of selectedCartItems) {
+      //   await cartsService.remove(cartItemId)
+      // }
       setCart(cart.filter(item => !selectedCartItems.includes(item.cartId)))
       setSelectedCartItems([])
       dispatch(createNotification('结算成功', 'success'))
+      dispatch(refetchUserInfo())
       setOpen(false)
     } catch (error) {
       console.error('Failed to checkout:', error)
+      console.error('Error details:', error.response ? error.response.data : error.message)
       dispatch(createNotification('结算失败', 'error'))
       setOpen(false)
     }
   }
+
 
   const handleSelectCartItem = (cartItemId) => {
     setSelectedCartItems(prevSelected =>
@@ -65,18 +80,39 @@ const Cart = () => {
       console.log(`Updating cart item ${cartItemId} with quantity ${quantity}`)
       if (quantity === 0) {
         await cartsService.remove(cartItemId)
-        setCart(cart.filter(item => item.id !== cartItemId))
         dispatch(createNotification('商品已从购物车移除', 'success'))
       } else {
-        const updatedCartItem = await cartsService.update(cartItemId, { quantity })
-        setCart(cart.map(item => item.id === cartItemId ? updatedCartItem : item))
+        await cartsService.update(cartItemId, { quantity })
         dispatch(createNotification('购物车商品数量已更新', 'success'))
       }
+      await fetchCart() // 更新购物车后重新获取数据
     } catch (error) {
       console.error('Failed to update cart item quantity:', error)
       dispatch(createNotification('更新购物车商品数量失败', 'error'))
     }
   }
+
+  const CartCard = ({ cartItem, selectedCartItems, handleSelectCartItem, handleUpdateQuantity }) => (
+    <Grid item key={cartItem.cartId} xs={12}>
+      <Card>
+        <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Checkbox
+            checked={selectedCartItems.includes(cartItem.cartId)}
+            onChange={() => handleSelectCartItem(cartItem.cartId)}
+          />
+          <Box sx={{ flexGrow: 1, ml: 2 }}>
+            <Typography gutterBottom variant='h5' component='div'>
+              {cartItem.Product.name}
+            </Typography>
+            <Typography variant='body2' color='text.secondary'>
+              价格: ¥{cartItem.Product.price}
+            </Typography>
+          </Box>
+          <Count count={cartItem.quantity} setCount={(count) => handleUpdateQuantity(cartItem.cartId, count)} handleNegative={() => handleUpdateQuantity(cartItem.cartId, 0)} />
+        </CardContent>
+      </Card>
+    </Grid>
+  )
 
   return (
     <>
@@ -87,25 +123,13 @@ const Cart = () => {
         <Grid container spacing={3}>
           {cart.length > 0 ? (
             cart.map(cartItem => (
-              <Grid item key={cartItem.cartId} xs={12}>
-                <Card>
-                  <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Checkbox
-                      checked={selectedCartItems.includes(cartItem.cartId)}
-                      onChange={() => handleSelectCartItem(cartItem.cartId)}
-                    />
-                    <Box sx={{ flexGrow: 1, ml: 2 }}>
-                      <Typography gutterBottom variant='h5' component='div'>
-                        {cartItem.Product.name}
-                      </Typography>
-                      <Typography variant='body2' color='text.secondary'>
-                        价格: ¥{cartItem.Product.price}
-                      </Typography>
-                    </Box>
-                    <Count count={cartItem.quantity} setCount={(count) => handleUpdateQuantity(cartItem.cartId, count)} handleNegative={() => handleUpdateQuantity(cartItem.cartId, 0)} />
-                  </CardContent>
-                </Card>
-              </Grid>
+              <CartCard
+                key={cartItem.cartId}
+                cartItem={cartItem}
+                selectedCartItems={selectedCartItems}
+                handleSelectCartItem={handleSelectCartItem}
+                handleUpdateQuantity={handleUpdateQuantity}
+              />
             ))
           ) : (
             <Typography variant='body2' color='text.secondary'>

@@ -60,15 +60,15 @@ const Order = () => {
     // return (<></>)
 
     return (
-        <Box sx={{ p: 2 }}>
-            <Typography variant="h4" gutterBottom>我的订单</Typography>
+        <div>
+            <h1>我的订单</h1>
             <Typography variant="h6" gutterBottom>购买订单</Typography>
             {buyOrders.length === 0 ? (
                 <Typography variant="body1">暂无购买订单</Typography>
             ) : (
                 <List>
                     {buyOrders.map(order => (
-                            <OrderCard key={order.id} order={order} />
+                        <OrderCard key={order.id} order={order} />
                     ))}
                 </List>
             )}
@@ -82,7 +82,31 @@ const Order = () => {
                     ))}
                 </List>
             )}
-        </Box>
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>创建评论</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="评论内容"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={reviewContent}
+                        onChange={(e) => setReviewContent(e.target.value)}
+                    />
+                    <Rating
+                        name="rating"
+                        value={reviewRating}
+                        onChange={(e, newValue) => setReviewRating(newValue)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>取消</Button>
+                    <Button onClick={handleSubmitReview}>提交</Button>
+                </DialogActions>
+            </Dialog>
+        </div>
     )
 }
 

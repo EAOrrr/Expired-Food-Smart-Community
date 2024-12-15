@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 
 const baseUrl = '/api/users'
 
@@ -41,13 +42,8 @@ const update = async (newObject) => {
 
 // 存钱 amount: Number
 const deposit = async (amount) => {
-  const response = await axios.post(`${baseUrl}/me/deposit`, { amount })
-  return response.data
-}
-
-// 账单
-const getBills = async () => {
-  const response = await axios.get(`${baseUrl}/me/bills`)
+  const idempotencyKey = uuidv4()
+  const response = await axios.post(`${baseUrl}/me/deposit`, { amount, idempotencyKey })
   return response.data
 }
 
@@ -57,5 +53,4 @@ export default {
   update,
   getUserInfo,
   deposit,
-  getBills,
 }

@@ -4,7 +4,7 @@ import productsService from "../../services/products";
 import cartsService from "../../services/carts";
 import ordersService from "../../services/orders";
 import { createNotification } from "../../reducers/notificationReducer";
-import { refetchUserInfo } from "../../reducers/userReducer";
+import { refetchUserInfo, updateUser } from "../../reducers/userReducer";
 import Count from "../Count";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle,  Box, IconButton, Avatar, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
@@ -79,6 +79,7 @@ const ProductPage = () => {
       setOpen(false);
       dispatch(createNotification('订单已生成', 'success'));
       dispatch(refetchUserInfo());
+      // dispatch(updateUser({ balance: - newOrder.total}));
       navigate('/orders');
     } catch (error) {
       console.error('Failed to create order:', error);

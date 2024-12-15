@@ -9,6 +9,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import loginService from '../services/login'
 import userService from '../services/user'
 import storage from '../services/storage'
+import user from '../services/user'
 
 const userSlice = createSlice({
   name: 'user',
@@ -36,9 +37,16 @@ const userSlice = createSlice({
       }
     },
     updateUser(state, action) {
+      console.log({
+        ...user.info,
+        ...action.payload
+      })
       return {
         ...state,
-        info: action.payload
+        info: {
+          ...state.info,
+          ...action.payload
+        }
       }
     },
   }

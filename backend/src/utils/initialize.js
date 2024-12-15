@@ -53,6 +53,9 @@ const initialize = async () => {
   await Bill.bulkCreate(bills);
 
   sequelize.close()
+
+  console.log('\n')
+  console.log('Data initialized successfully')
 }
 
 initialize()

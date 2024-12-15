@@ -30,15 +30,6 @@ const ShoppingPage = () => {
   }, [])
 
 
-  const addToCart = async (productId) => {
-    try {
-      const newCartItem = await cartsService.create(productId, { quantity: 1 })
-      dispatch(createNotification('商品已添加到购物车', 'success'))
-    } catch (error) {
-      console.error('Failed to add product to cart:', error)
-      dispatch(createNotification('添加到购物车失败', 'error'))
-    }
-  }
 
   return (
     <>
@@ -46,10 +37,10 @@ const ShoppingPage = () => {
         <Typography variant='h4' gutterBottom>
           商品列表
         </Typography>
-        <Grid container spacing={3}>
+      <Grid container spacing={2}>
           {products.length > 0 ? (
             products.map(product => (
-              <ProductCard key={product.productId} product={product} addToCart={addToCart} />
+              <ProductCard key={product.productId} product={product} />
               
             ))
           ) : (

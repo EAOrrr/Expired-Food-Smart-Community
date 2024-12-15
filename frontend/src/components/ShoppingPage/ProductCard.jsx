@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 // 商品卡片
 /* TODO: 美化 */
 
-const ProductCard = ({ product, addToCart }) => {
+
+const ProductCard = ({ product }) => {
   console.log(product)
   return (
     <Grid item id={product.productId}  size={{ xs: 12, md: 4 }}>
@@ -30,19 +31,10 @@ const ProductCard = ({ product, addToCart }) => {
             价格: ¥{product.price}
           </Typography>
           <Typography variant='body2' color='text.secondary'>
-            库存: {product.stock}
-          </Typography>
-          <Typography variant='body2' color='text.secondary'>
             有效期: {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '无'}
-          </Typography>
-          <Typography variant='body2' color='text.secondary'>
-            卖家名字: {product.Seller.username}
           </Typography>
         </CardContent>
         </CardActionArea>
-        <CardActions>
-        <Button size='small' onClick={() => addToCart(product.productId)}>添加到购物车</Button>
-        </CardActions>
       </Card>
     </Grid>
   );

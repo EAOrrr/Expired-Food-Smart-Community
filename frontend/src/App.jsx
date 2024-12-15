@@ -42,7 +42,8 @@ function App() {
       {/* <Route path='/reviews' element={<ProtectedRoute> <></> </ProtectedRoute>} /> */}
 
       {/* 测试专用 */}
-      <Route path='/test' element={<ProtectedRoute> <NotificationDisplay /> </ProtectedRoute>} />
+      {/* <Route path='/test' element={<ProtectedRoute> <NotificationDisplay /> </ProtectedRoute>} /> */}
+      <Route path='/test' element={<NotificationDisplay />} />
       <Route path='*' element={<Navigate to='/' />} />
     </Routes>
   )

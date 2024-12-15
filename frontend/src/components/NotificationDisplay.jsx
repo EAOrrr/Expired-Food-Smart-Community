@@ -1,36 +1,33 @@
-import { TextField, Select, MenuItem, Container } from "@mui/material";
-import { useField } from "../hooks";
-import { createNotification } from "../reducers/notificationReducer";
-import { useDispatch } from "react-redux";
-import { useState } from "react";
+import React, { useState } from 'react';
+import TextField from '@mui/material/TextField';
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 
-const NotificationDisplay = () => {
-  const notification = useField('notification')
-  const [severity, setSeverity] = useState('success')
-  // useDispatch hook
-  const dispatch = useDispatch()
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import Count from './Count';
 
-  const handleClick = () => {
-    console.log(notification)
-    // 发布通知
-    dispatch(createNotification(notification.value, severity))
-  }
+const NumberInput = () => {
+  const [number, setNumber] = useState(0);
+
+  const handleChange = (event) => {
+    setNumber(event.target.value);
+  };
 
   return (
-    <Container>
-      <TextField {...notification} />
-      <Select
-        value={severity}
-        onChange={(e) => setSeverity(e.target.value)}
-      >
-        <MenuItem value="success">Success</MenuItem>
-        <MenuItem value="error">Error</MenuItem>
-        <MenuItem value="warning">Warning</MenuItem>
-      </Select>
-      <button onClick={handleClick}>设置通知</button>
-    </Container>
-  )
-}
+    <>
+    <Count count={number} setCount={setNumber} />
+    <TextField
+      label="Number"
+      type="number"
+      value={number}
+      onChange={handleChange}
+      InputLabelProps={{
+        shrink: true,
+      }}
+      variant="outlined"
+    />
+    </>
+  );
+};
 
-export default NotificationDisplay;
-
+export default NumberInput;

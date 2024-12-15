@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { userExtractor } = require('../utils/middleware');
-const { Product, Image, User } = require('../models');
+const { Product, Image, User, Cart } = require('../models');
 const multer = require('multer');
 const upload = multer();
 
@@ -60,16 +60,18 @@ router.post('/', userExtractor, upload.fields([
   res.status(201).json(product);
 })
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', userExtractor, async (req, res) => {
   const { id } = req.params;
   const product = await Product.findByPk(id, {
     include: [
       { model: Image, as: 'Images', attributes: ['imageId'] },
+      { model: Cart, as: 'Carts',  where: { userId: req.user.userId }, required: false }
     ]
   });
   if (!product) {
     return res.status(404).end();
   }
+  
   res.json(product);
 })
 

@@ -12,7 +12,7 @@ import OrdersPage from './components/OrdersPage'
 import ProductPage from "./components/ProductPage"
 import Profile from './components/Profile'
 import BillsPage from './components/BillsPage'
-
+import UserProfile from "./components/UserProfile"
 
 function App() {
   const dispatch = useDispatch()
@@ -33,7 +33,7 @@ function App() {
       {/* 包括他人的基本信息，他人的评论，(商品)等 /} 
       {/ <Route path='/users/:id' element={<ProtectedRoute> <></> </ProtectedRoute>} /> */}
       {/* <Route path='/users/:id' element={<ProtectedRoute><UserProfile /></ProtectedRoute>} /> */}
-
+      <Route path = '/users/:id' element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
       <Route path='/carts' element={<ProtectedRoute><CartsPage /></ProtectedRoute>} />
       <Route path='/orders' element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
       <Route path='/profile' element={<ProtectedRoute><Profile /></ProtectedRoute>} />

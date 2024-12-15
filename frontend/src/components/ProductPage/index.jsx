@@ -67,6 +67,10 @@ const ProductPage = () => {
     setOpen(false);
   };
 
+  const handleUpdateValue = (value) => {
+    return value >= 1
+  }
+
   const handleConfirmPurchase = async () => {
     // Add logic to handle purchase confirmation
     try {
@@ -116,7 +120,7 @@ const ProductPage = () => {
             </Avatar>
           </IconButton>
           </Box>
-          <Count count={count} setCount={setCount} />
+          <Count count={count} setCount={setCount} handleUpdate={handleUpdateValue}/>
           <Button onClick={handleAddToCart}>加入购物车</Button>
           <Button onClick={handlePurchase}>直接购买</Button>
           <DialogCheckout />

@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Typography, Grid, Card, CardContent, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import cartsService from '../../services/carts'
+import orderSerivce from '../../services/orders'
 import { createNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 import Count from '../Count'
 import CheckoutTable from '../CheckoutTable'
+
+
+// 1. Count 组件: [value, setValue] = useState(number), handleUpdate = (value) => boolean
+// 2. 建议分开CartCard组件
+
 
 const Cart = () => {
   const [cart, setCart] = useState([])
@@ -34,8 +40,8 @@ const Cart = () => {
 
   const handleConfirmCheckout = async () => {
     try {
-      await cartsService.checkout(selectedCartItems)
-      setCart(cart.filter(item => !selectedCartItems.includes(item.id)))
+      await orderSerivce.createByCart(selectedCartItems)
+      setCart(cart.filter(item => !selectedCartItems.includes(item.cartId)))
       setSelectedCartItems([])
       dispatch(createNotification('结算成功', 'success'))
       setOpen(false)
@@ -81,12 +87,12 @@ const Cart = () => {
         <Grid container spacing={3}>
           {cart.length > 0 ? (
             cart.map(cartItem => (
-              <Grid item key={cartItem.id} xs={12}>
+              <Grid item key={cartItem.cartId} xs={12}>
                 <Card>
                   <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Checkbox
-                      checked={selectedCartItems.includes(cartItem.id)}
-                      onChange={() => handleSelectCartItem(cartItem.id)}
+                      checked={selectedCartItems.includes(cartItem.cartId)}
+                      onChange={() => handleSelectCartItem(cartItem.cartId)}
                     />
                     <Box sx={{ flexGrow: 1, ml: 2 }}>
                       <Typography gutterBottom variant='h5' component='div'>
@@ -96,7 +102,7 @@ const Cart = () => {
                         价格: ¥{cartItem.Product.price}
                       </Typography>
                     </Box>
-                    <Count count={cartItem.quantity} setCount={(count) => handleUpdateQuantity(cartItem.id, count)} handleNegative={() => handleUpdateQuantity(cartItem.id, 0)} />
+                    <Count count={cartItem.quantity} setCount={(count) => handleUpdateQuantity(cartItem.cartId, count)} handleNegative={() => handleUpdateQuantity(cartItem.cartId, 0)} />
                   </CardContent>
                 </Card>
               </Grid>
@@ -111,7 +117,7 @@ const Cart = () => {
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>账单确认</DialogTitle>
           <DialogContent>
-            <CheckoutTable products={cart.filter(item => selectedCartItems.includes(item.id)).map(item => ({ ...item.Product, quantity: item.quantity }))} />
+            <CheckoutTable products={cart.filter(item => selectedCartItems.includes(item.cartId)).map(item => ({ ...item.Product, quantity: item.quantity }))} />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>取消</Button>

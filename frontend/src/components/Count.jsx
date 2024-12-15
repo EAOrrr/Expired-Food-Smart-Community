@@ -3,18 +3,20 @@ import { Box, IconButton, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
-const Count = ({ count, setCount, handleNegative }) => {
+const Count = ({ count, setCount, handleUpdate }) => {
   const handleIncrement = () => {
     setCount(parseInt(count) + 1);
   }
 
   const handleDecrement = () => {
     const value = parseInt(count) - 1;
-    if (value < 0) {
-      handleNegative && handleNegative(value);
-    } else {
-      setCount(value);
+    if (handleUpdate) {
+      const shouldSet = handleUpdate(value);
+      if (!shouldSet) {
+        return;
+      }
     }
+    setCount(value);
   }
 
   const handleChange = (event) => {

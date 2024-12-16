@@ -1,0 +1,529 @@
+Filename: src/models/product.js
+const { Model, DataTypes, UUIDV4} = require('sequelize')
+const { sequelize } = require('../utils/db')
+
+class Product extends Model {}
+
+Product.init({
+  productId: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: UUIDV4()
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  price: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  stock: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  expiryDate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  sellerId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users', // name of the target model
+      key: 'user_id', // key in the target model
+    }
+  },
+}, {
+  sequelize,
+  underscored: true,
+  modelName: 'product'
+});
+
+module.exports = Product
+Filename: src/models/bill.js
+const { Model, DataTypes, UUIDV4 } = require('sequelize');
+const { sequelize } = require('../utils/db');
+
+class Bill extends Model {}
+
+Bill.init({
+  billId: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: UUIDV4()
+  },
+  userId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users', // name of the target model
+      key: 'user_id', // key in the target model
+    }
+  },
+  amount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  operation: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      isIn: [['deposit', 'payment', 'income', 'refund']]
+    }
+  },
+  orderId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'orders', // name of the target model
+      key: 'order_id', // key in the target model
+    }
+  }
+}, {
+  sequelize,
+  underscored: true,
+  modelName: 'bill'
+})
+
+module.exports = Bill;
+Filename: src/models/idempotencyKey.js
+const { Model, DataTypes } = require('sequelize');
+const { sequelize } = require('../utils/db');
+
+class IdempotencyKey extends Model {}
+
+IdempotencyKey.init({
+  idempotencyKeyId: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: DataTypes.UUIDV4,
+  },
+  key: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  userId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'user_id',
+    },
+    onDelete: 'CASCADE',
+  },
+  operation: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  expiry: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+}, {
+  sequelize,
+  underscored: true,
+  modelName: 'idempotency_key',
+  indexes: [
+    {
+      unique: true,
+      fields: ['key', 'operation', 'user_id'],
+    }
+  ]
+});
+
+module.exports = IdempotencyKey;
+Filename: src/models/cart.js
+const { Model, DataTypes, UUIDV4 } = require('sequelize');
+const { sequelize } = require('../utils/db');
+
+class Cart extends Model {}
+
+Cart.init({
+  cartId: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: UUIDV4()
+  },
+  userId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users', // name of the target model
+      key: 'user_id', // key in the target model
+    }
+  },
+  productId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'products', // name of the target model
+      key: 'product_id', // key in the target model
+    }
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  addedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  }
+}, {
+  sequelize,
+  underscored: true,
+  modelName: 'cart',
+  indexes: [
+    {
+      unique: true,
+      fields: ['user_id', 'product_id']
+    }
+  ]
+});
+
+module.exports = Cart;
+
+Filename: src/models/review.js
+const { Model, DataTypes, UUIDV4 } = require('sequelize');
+const { sequelize } = require('../utils/db');
+
+class Review extends Model {}
+
+Review.init({
+  reviewId: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: UUIDV4(),
+  },
+  content: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  rating: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 1,
+      max: 5,
+    },
+  },
+  reviewerId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'user_id',
+    },
+  },
+  reviewedId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'user_id',
+    },
+  },
+  type: {
+    // type: DataTypes.ENUM('buyerToSeller', 'sellerToBuyer'),
+    type: DataTypes.STRING,
+    validate: {
+      isIn: [['buyerToSeller', 'sellerToBuyer']],
+    },
+    allowNull: false,
+  },
+  orderId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'orders',
+      key: 'order_id',
+    },
+    // unique: true, // Ensure each order can only be reviewed once
+  },
+}, {
+  sequelize,
+  underscored: true,
+  modelName: 'review',
+  indexes: [
+    {
+      unique: true,
+      fields: ['orderId', 'type'],
+    },
+  ],
+});
+
+
+module.exports = Review;
+Filename: src/models/index.js
+const User = require('./user')
+const Product = require('./product')
+const Order = require('./order')
+const Cart = require('./cart')
+const IdempotencyKey = require('./idempotencyKey')
+const Review = require('./review')
+const Image = require('./image')
+const Bill = require('./bill')
+
+// Associations
+User.hasMany(Product, { foreignKey: 'SellerId', as: 'Products', onDelete: 'CASCADE' });
+Product.belongsTo(User, { foreignKey: 'SellerId', as: 'Seller', onDelete: 'CASCADE' });
+
+User.belongsToMany(Product, { through: Cart, foreignKey: 'UserId', otherKey: 'ProductId', as: 'CartProducts'});
+// Product.belongsToMany(User, { through: Cart, foreignKey: 'ProductId', otherKey: 'UserId', as: 'CartUsers', onDelete: 'SET NULL' });
+
+User.hasMany(Order, { foreignKey: 'BuyerId', as: 'Orders' });
+Order.belongsTo(User, { foreignKey: 'BuyerId', as: 'Buyer' });
+
+User.hasMany(Order, { foreignKey: 'SellerId', as: 'SellerOrders' });
+Order.belongsTo(User, { foreignKey: 'SellerId', as: 'Seller' });
+
+Product.hasMany(Order, { foreignKey: 'ProductId', as: 'Orders', onDelete: 'CASCADE' });
+Order.belongsTo(Product, { foreignKey: 'ProductId', as: 'Product', onDelete: 'CASCADE' });
+
+User.hasMany(Cart, { foreignKey: 'UserId', as: 'Carts', onDelete: 'CASCADE' });
+Cart.belongsTo(User, { foreignKey: 'UserId', as: 'User', onDelete: 'CASCADE' });
+
+Product.hasMany(Cart, { foreignKey: 'ProductId', as: 'Carts' });
+Cart.belongsTo(Product, { foreignKey: 'ProductId', as: 'Product' });
+
+User.hasMany(IdempotencyKey, { foreignKey: 'UserId', as: 'IdempotencyKeys', onDelete: 'CASCADE' });
+IdempotencyKey.belongsTo(User, { foreignKey: 'UserId', as: 'User', onDelete: 'CASCADE' });
+
+// Associations
+User.hasMany(Review, { foreignKey: 'reviewerId', as: 'ReviewsGiven' });
+User.hasMany(Review, { foreignKey: 'reviewedId', as: 'ReviewsReceived', onDelete: 'CASCADE' });
+Review.belongsTo(User, { foreignKey: 'reviewerId', as: 'Reviewer' });
+Review.belongsTo(User, { foreignKey: 'reviewedId', as: 'Reviewed', onDelete: 'CASCADE' });
+
+Order.hasOne(Review, { foreignKey: 'orderId', as: 'Review', onDelete: 'CASCADE' });
+Review.belongsTo(Order, { foreignKey: 'orderId', as: 'Order', onDelete: 'CASCADE' });
+
+Product.hasMany(Image, { foreignKey: 'productId', as: 'Images', onDelete: 'CASCADE' });
+Image.belongsTo(Product, { foreignKey: 'productId', as: 'Product', onDelete: 'CASCADE' });
+
+User.hasMany(Bill, { foreignKey: 'userId', as: 'Bills', onDelete: 'CASCADE' });
+Bill.belongsTo(User, { foreignKey: 'userId', as: 'User', onDelete: 'CASCADE' });
+
+Order.hasOne(Bill, { foreignKey: 'orderId', as: 'Bill', onDelete: 'CASCADE' });
+
+
+// Hook to ensure order status is 'Delivered' before creating a review
+Review.beforeCreate(async (review, options) => {
+  const order = await Order.findByPk(review.orderId);
+  if (order.status !== 'Delivered') {
+    throw new Error('Order must be delivered to leave a review');
+  }
+});
+
+// Hook to ensure productId exists before creating a order
+Order.beforeCreate(async (order, options) => {
+  const product = await Product.findByPk(order.productId);
+  if (!product) {
+    throw new Error('Product does not exist');
+  }
+});
+
+Order.beforeUpdate(async (order, options) => {
+  const validTransitions = {
+    Pending: ['Delivering', 'Cancelled'],
+    Delivering: ['Delivered', 'Cancelled'],
+    Delivered: [],
+  };
+  const currentStatus = order._previousDataValues.status;
+  const newStatus = order.status;
+
+  if (!validTransitions[currentStatus]?.includes(newStatus)) {
+    throw new Error(`Invalid status transition from ${currentStatus} to ${newStatus}`);
+  }
+});
+
+
+// Hook to ensure productId exists before creating a cart
+Cart.beforeCreate(async (cart, options) => {
+  const product = await Product.findByPk(cart.productId);
+  if (!product) {
+    throw new Error('Product does not exist');
+  }
+});
+
+module.exports = {
+  User,
+  Product,
+  Order,
+  Cart,
+  IdempotencyKey,
+  Review,
+  Image,
+  Bill,
+}
+Filename: src/models/user.js
+const { Model, DataTypes, UUIDV4} = require('sequelize')
+const { sequelize } = require('../utils/db')
+
+class User extends Model {}
+
+User.init({
+  userId: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: UUIDV4()
+  },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isNumeric: true
+    }
+  },
+  passwordHash: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  balance: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 20
+  },
+  lastDepositTime: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null,
+  }
+}, {
+  sequelize,
+  underscored: true,
+  modelName: 'user'
+})
+
+module.exports = User
+Filename: src/models/order.js
+
+const { Model, DataTypes, UUIDV4 } = require('sequelize');
+const { sequelize } = require('../utils/db');
+
+class Order extends Model {}
+
+Order.init({
+  orderId: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: UUIDV4()
+  },
+  productId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'products', // name of the target model
+      key: 'product_id', // key in the target model
+    }
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  total: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  price: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  sellerId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users', // name of the target model
+      key: 'user_id', // key in the target model
+    }
+  },
+  buyerId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users', // name of the target model
+      key: 'user_id', // key in the target model
+    }
+  },
+  status: {
+    type: DataTypes.STRING,
+    validate: {
+      isIn: [['Pending', 'Delivering', 'Delivered', 'Cancelled']]
+    },
+    allowNull: false,
+    defaultValue: 'Pending'
+  }
+}, {
+  sequelize,
+  underscored: true,
+  modelName: 'order'
+});
+
+module.exports = Order;
+Filename: src/models/image.js
+const { sequelize } = require('../utils/db')
+const { DataTypes, Model, UUIDV4 } = require('sequelize')
+
+class Image extends Model {}
+
+Image.init({
+  imageId: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: UUIDV4(),
+  },
+
+  data: {
+    type: DataTypes.BLOB('long'),
+    allowNull: false,
+  },
+
+  mimeType: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  productId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'products',
+      key: 'productId',
+    }
+  },
+  isCover: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+}, {
+  sequelize,
+  underscored: true,
+  modelName: 'image'
+})
+
+module.exports = Image
+

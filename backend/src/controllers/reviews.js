@@ -22,6 +22,14 @@ router.post('/', userExtractor, async (req, res) => {
     return res.status(403).json({ error: 'Unauthorized' })
   }
 
+  const existingReview = await Review.findOne({
+    where: { reviewerId, reviewedId, orderId, type }
+  });
+
+  if (existingReview) {
+    return res.status(429).json({ error: 'Review already exists' });
+  }
+
   const review = await Review.create({ content, rating, reviewerId, reviewedId, type, orderId })
   res.status(201).json(review)
 })

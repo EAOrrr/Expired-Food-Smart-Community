@@ -98,26 +98,34 @@ const Profile = () => {
       )}
       {tabIndex === 1 && (
         <Box sx={{ p: 3 }}>
-          {reviewsGiven.map(review => (
-            <Card key={review.reviewId} variant="outlined" sx={{ borderRadius: 2, boxShadow: 3, fontFamily: 'Noto Serif SC', marginBottom: 2 }}>
-              <CardContent>
-                <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>评分：{review.rating}</Typography>
-                <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>评论：{review.content}</Typography>
-              </CardContent>
-            </Card>
-          ))}
+          {reviewsGiven.length > 0 ? (
+            reviewsGiven.map(review => (
+              <Card key={review.reviewId} variant="outlined" sx={{ borderRadius: 2, boxShadow: 3, fontFamily: 'Noto Serif SC', marginBottom: 2 }}>
+                <CardContent>
+                  <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>评分：{review.rating}</Typography>
+                  <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>评论：{review.content}</Typography>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>没有给出的评论</Typography>
+          )}
         </Box>
       )}
       {tabIndex === 2 && (
         <Box sx={{ p: 3 }}>
-          {reviewsReceived.map(review => (
-            <Card key={review.reviewId} variant="outlined" sx={{ borderRadius: 2, boxShadow: 3, fontFamily: 'Noto Serif SC', marginBottom: 2 }}>
-              <CardContent>
-                <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>评分：{review.rating}</Typography>
-                <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>评论：{review.content}</Typography>
-              </CardContent>
-            </Card>
-          ))}
+          {reviewsReceived.length > 0 ? (
+            reviewsReceived.map(review => (
+              <Card key={review.reviewId} variant="outlined" sx={{ borderRadius: 2, boxShadow: 3, fontFamily: 'Noto Serif SC', marginBottom: 2 }}>
+                <CardContent>
+                  <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>评分：{review.rating}</Typography>
+                  <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>评论：{review.content}</Typography>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>没有收到的评论</Typography>
+          )}
         </Box>
       )}
       <Dialog open={open} onClose={handleClose}>

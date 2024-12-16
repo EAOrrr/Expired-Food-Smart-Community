@@ -7,7 +7,7 @@ import Count from '../Count'
 const CartCard = ({ cartItem, selectedCartItems, handleSelectCartItem, handleUpdateQuantity }) => {
   if (!cartItem) return null
   const [value, setValue] = useState((cartItem && cartItem.quantity) || 0)
-  console.log(value)
+  console.log('value: ', value)
 
   const handleUpdate = (newValue) => {
     // setValue(newValue)

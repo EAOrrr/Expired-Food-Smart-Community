@@ -27,8 +27,18 @@ const Count = ({ count, setCount, handleUpdate }) => {
   }
 
   const handleChange = (event) => {
-    const value = event.target.value;
-    setCount(parseInt(value))
+    const value = event?.target?.value ?? 0;
+    if (value === '') {
+      setCount(0);
+      return;
+    }
+    if (handleUpdate) {
+      const shouldSet = handleUpdate(parseInt(value));
+      if (!shouldSet) {
+        return;
+      }
+    }
+    setCount(parseInt(value));
   }
 
   return (

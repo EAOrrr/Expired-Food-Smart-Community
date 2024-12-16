@@ -3,8 +3,11 @@ const { Umzug, SequelizeStorage } = require('umzug')
 const path = require('path')
 const { DATABASE_URL } = require('./config')
 
+// connect docker postgresql database
 // const sequelize = new Sequelize(DATABASE_URL, )
 
+
+// connect azure postgresql database
 const sequelize = new Sequelize(DATABASE_URL,
   {
     dialect: 'postgres',
@@ -17,6 +20,16 @@ const sequelize = new Sequelize(DATABASE_URL,
     },
   }
 )
+
+// connect heroku postgresql database
+// const sequelize = new Sequelize(DATABASE_URL, {
+//   dialectOptions: {
+//     ssl: {
+//       require: true,
+//       rejectUnauthorized: false
+//     }
+//   },
+// })
 
 const migrationConf = {
   migrations: {

@@ -27,6 +27,7 @@ const ProductPage = () => {
   const [cart, setCart] = useState(null);
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
+  const [confirmDisabled, setConfirmDisabled] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -35,7 +36,7 @@ const ProductPage = () => {
         const cart = product.Carts.length > 0 ? product.Carts[0] : null;
         setProduct(product);
         setCart(cart);
-        setCount(cart ? cart.quantity : 0);
+        setCount(cart ? cart.quantity : 1);
       } catch (error) {
         console.error('Failed to fetch product:', error);
       }
@@ -45,12 +46,13 @@ const ProductPage = () => {
 
   const handleAddToCart = async () => {
     try {
+      const actualQuantity = count > product.stock ? product.stock : count;
       if (!cart) {
-        const newCartItem = await cartsService.create(product.productId, { quantity: count })
+        const newCartItem = await cartsService.create(product.productId, { quantity: actualQuantity });
         setCart(newCartItem)
         dispatch(createNotification('商品已添加到购物车', 'success'))
       } else {
-        const updatedCartItem = await cartsService.update(cart.cartId, { quantity: count })
+        const updatedCartItem = await cartsService.update(cart.cartId, { quantity: actualQuantity });
         setCart(updatedCartItem)
         dispatch(createNotification('购物车商品数量已更新', 'success'))
       }
@@ -69,20 +71,28 @@ const ProductPage = () => {
   };
 
   const handleUpdateValue = (value) => {
-    return value >= 1
+    return value >= 1 && value <= product.stock;
   }
 
   const handleConfirmPurchase = async () => {
+    if (count > product.stock) {
+      dispatch(createNotification('商品库存不足', 'error'));
+      return;
+    }
+
     // Add logic to handle purchase confirmation
     try {
+      setConfirmDisabled(true);
       const newOrder = await ordersService.createByProduct({ productId: product.productId, quantity: count });
       setOpen(false);
       dispatch(createNotification('订单已生成', 'success'));
       dispatch(refetchUserInfo());
+      setConfirmDisabled(false);
       // dispatch(updateUser({ balance: - newOrder.total}));
       navigate('/orders');
     } catch (error) {
       console.error('Failed to create order:', error);
+      setConfirmDisabled(false);
       dispatch(createNotification('订单生成失败', 'error'));
       setOpen(false);
     }
@@ -96,7 +106,7 @@ const ProductPage = () => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>取消</Button>
-        <Button onClick={handleConfirmPurchase}>确认</Button>
+        <Button onClick={handleConfirmPurchase} disabled={confirmDisabled}>确认</Button>
       </DialogActions>
     </Dialog>
   );

@@ -47,7 +47,8 @@
 
 1. 跳转到 `backend` 文件夹
 2. 准备一个 `PostgreSQL` 数据库  
-   **TIPS:** `docker` 运行 `PostgreSQL` 映像是我们运行开发的方案，如使用其他方式运行 `PostgreSQL` 数据库，可能要修改 `backend/src/utils/db.js` 中 `sequelize` 的初始化。
+   > **TIPS:** `docker` 运行 `PostgreSQL` 映像是我们运行开发的方案，如使用其他方式运行 `PostgreSQL` 数据库，可能要修改 `backend/src/utils/db.js` 中 `sequelize` 的初始化。其中连接`docker` `PostgreSQL`映像的方式，连接远程`azure`远程数据库，`heroku`远程数据库种`sequelize`的初始化文件已在`backend/src/utils/db.js`给出
+   
 
    此处给出 `docker` 运行 `PostgreSQL` 映像数据库的方案：
    1. 安装 docker，参考 [Docker 安装文档](https://docs.docker.com/engine/install/)

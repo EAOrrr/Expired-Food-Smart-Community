@@ -13,6 +13,7 @@ const BillsPage = () => {
   const [bills, setBills] = useState([])
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState(0)
+  const [depositing, setDepositing] = useState(false)
   const user = useSelector(state => state.user.info)
   const dispatch = useDispatch()
 
@@ -42,7 +43,9 @@ const BillsPage = () => {
       return
     }
     try {
+      setDepositing(true)
       const userBalanceAfterDeposit = await userService.deposit(amount)
+      setDepositing(false)
       console.log('存钱成功:', userService)
       dispatch(createNotification('存钱成功', 'success'))
       dispatch(updateUser(userBalanceAfterDeposit))
@@ -72,6 +75,7 @@ const BillsPage = () => {
       }
     }
     setOpen(false)
+    setDepositing(false)
   }
 
   if (!user) {
@@ -83,7 +87,7 @@ const BillsPage = () => {
       <h1>我的账单</h1>
       <Box flexDirection='row' display='flex' justifyContent='flex-start'>
         <Typography variant="h6" gutterBottom fontFamily='Noto Serif SC'>当前余额: {user.balance}</Typography>
-        <Button variant="contained" color="primary" onClick={handleDeposit} sx={{ marginBottom: 2, ml: 3 }}>
+        <Button disabled={depositing} variant="contained" color="primary" onClick={handleDeposit} sx={{ marginBottom: 2, ml: 3 }}>
           存钱
         </Button>
       </Box>

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
     "migration:down": "node src/utils/rollback.js",
     "test": "node --test",
     "init": "node src/utils/initialize.js"

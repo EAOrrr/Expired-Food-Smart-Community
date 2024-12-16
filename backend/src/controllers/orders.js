@@ -39,6 +39,10 @@ router.post('/product', userExtractor, async (req, res, next) => {
     return res.status(400).json({ error: 'Idempotency-Key is required' });
   }
 
+  if (quantity <= 0) {
+    return res.status(400).json({ error: 'Invalid quantity' });
+  }
+
   const t = await sequelize.transaction();
   try {
     const existingKey = await IdempotencyKey.findOne({ where: { key: idempotencyKey }, transaction: t });
@@ -49,8 +53,11 @@ router.post('/product', userExtractor, async (req, res, next) => {
 
     const user = req.user;
 
-    // 获取商品信息
-    const product = await Product.findByPk(productId, { transaction: t });
+    // 获取商品信息并锁定行
+    const product = await Product.findByPk(productId, { 
+      transaction: t, 
+      lock: t.LOCK.UPDATE 
+    });
     if (!product) throw new Error('商品不存在');
 
     // 验证库存是否足够
@@ -60,16 +67,19 @@ router.post('/product', userExtractor, async (req, res, next) => {
 
     const totalPrice = product.price * quantity;
 
-    // Check if user balance is sufficient
+    // Acquire a row-level lock on the user
+    await user.reload({ transaction: t, lock: t.LOCK.UPDATE });
+
+    // Recalculate balance after locking
     if (user.balance < totalPrice) {
       throw new Error('余额不足'); // 'Insufficient balance'
     }
 
-    // Deduct the total price from user balance
-    await user.update({ balance: user.balance - totalPrice }, { transaction: t });
+    // Deduct the total price from user balance atomically
+    await user.decrement('balance', { by: totalPrice, transaction: t });
 
-    // 减少商品库存
-    await product.update({ stock: product.stock - quantity }, { transaction: t });
+    // 减少商品库存 atomically
+    await product.decrement('stock', { by: quantity, transaction: t });
 
     // 创建订单
     const order = await Order.create({
@@ -145,12 +155,19 @@ router.post('/cart', userExtractor, async (req, res) => {
 
     // 验证所有商品库存是否足够
     for (const cart of carts) {
-      const product = cart.Product;
+      // 获取商品信息并锁定行
+      const product = await Product.findByPk(cart.productId, { 
+        transaction: t, 
+        lock: t.LOCK.UPDATE 
+      });
       const quantity = cart.quantity;
 
       if (product.stock < quantity) {
         throw new Error(`商品 ${product.name} 库存不足`);
       }
+
+      // 减少商品库存 atomically
+      await product.decrement('stock', { by: quantity, transaction: t });
     }
 
     let totalPrice = 0;
@@ -159,9 +176,6 @@ router.post('/cart', userExtractor, async (req, res) => {
     for (const cart of carts) {
       const product = cart.Product;
       const quantity = cart.quantity;
-
-      // 减少商品库存
-      await product.update({ stock: product.stock - quantity }, { transaction: t });
 
       const order = await Order.create({
         productId: product.productId,
@@ -185,14 +199,16 @@ router.post('/cart', userExtractor, async (req, res) => {
       await cart.destroy({ transaction: t });
     }
 
-    // Check if user balance is sufficient
+    // Acquire a row-level lock on the user
+    await user.reload({ transaction: t, lock: t.LOCK.UPDATE });
+
+    // Recalculate balance after locking
     if (user.balance < totalPrice) {
       throw new Error('余额不足'); // 'Insufficient balance'
     }
 
-    // Deduct the total price from user balance
-    await user.increment({balance: -totalPrice}, { transaction: t });
-    // await user.update({ balance: user.balance - totalPrice }, { transaction: t });
+    // Deduct the total price from user balance atomically
+    await user.decrement('balance', { by: totalPrice, transaction: t });
 
     // 结算完成后保存Idempotency Key
     await IdempotencyKey.create({

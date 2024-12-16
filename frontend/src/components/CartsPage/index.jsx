@@ -19,6 +19,7 @@ const Cart = () => {
   const [cart, setCart] = useState([])
   const [selectedCartItems, setSelectedCartItems] = useState([])
   const [open, setOpen] = useState(false)
+  const [confirmDisabled, setConfirmDisabled] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -52,14 +53,18 @@ const Cart = () => {
     console.log('Selected cart items:', selectedCartItems)
 
     try {
+      setConfirmDisabled(true)
       await orderSerivce.createByCart({ cartIds: selectedCartItems })
       setCart(cart.filter(item => !selectedCartItems.includes(item.cartId)))
       setSelectedCartItems([])
       dispatch(createNotification('结算成功', 'success'))
       dispatch(refetchUserInfo())
       setOpen(false)
+      setConfirmDisabled(false)
+
       navigate('/orders')
     } catch (error) {
+      setConfirmDisabled(false)
       console.error('Failed to checkout:', error)
       console.error('Error details:', error.response ? error.response.data : error.message)
       dispatch(createNotification('结算失败', 'error'))
@@ -131,7 +136,7 @@ const Cart = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>取消</Button>
-            <Button onClick={handleConfirmCheckout} sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>确认</Button>
+            <Button disabled={confirmDisabled} onClick={handleConfirmCheckout} sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>确认</Button>
           </DialogActions>
         </Dialog>
       </Box>

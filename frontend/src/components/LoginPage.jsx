@@ -20,6 +20,7 @@ import { FormControl,
 import { useField } from '../hooks'
 import { login } from '../reducers/userReducer'
 import { createNotification } from '../reducers/notificationReducer'
+import PasswordTextField from './PasswordTextField'
 
 
 const Login = () => {
@@ -94,39 +95,11 @@ const Login = () => {
           欢迎回来
           </Typography>
           <Box component='form' onSubmit={handleLogin} sx={{ mt: 1 }} width={250}>
-            <div>
               <TextField {...username} fullWidth required margin='none'/>
-            </div>
-            <div>
-              <FormControl margin='dense' variant="outlined" fullWidth>
-                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  type={showPassword ? 'text' : 'password'}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="Password"
-                />
-              </FormControl>
-              {/* <TextField {...password} fullWidth required margin='dense'/> */}
-            </div>
-            <div>
+              <PasswordTextField label={'密码'} value={password} onChange={setPassword} />
               <Button type='submit' variant="contained" fullWidth sx={{ mt: 2, mb: 2 }}>
                 <Typography variant='button' fontFamily='Noto Serif SC'>登录</Typography>
               </Button>
-            </div>
               <Typography 
                 variant='body2' 
                 fontFamily='Noto Serif SC'

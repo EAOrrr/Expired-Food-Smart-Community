@@ -8,19 +8,15 @@ import CssBaseline from '@mui/material/CssBaseline'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import Visibility from '@mui/icons-material/Visibility'
-import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { FormControl,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
+import { 
   Alert,
-  IconButton } from '@mui/material'
+} from '@mui/material'
 
 import { useField } from '../hooks'
 import { createNotification } from '../reducers/notificationReducer'
 
 import userService from '../services/user'
+import PasswordTextField from './PasswordTextField'
 
 
 const SignUp = () => {
@@ -35,27 +31,13 @@ const SignUp = () => {
   const notification = useSelector(state => state.notification)
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [signUpLoading, setSignUpLoading] = useState(false)
 
   const username = useField('用户名')
   const address = useField('地址')
   const phone = useField('电话')
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show)
-  const handleClickShowPasswordConfirm = () => setShowPasswordConfirm((show) => !show)
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value)
-  }
-
-  const handlePasswordConfirmChange = (event) => {
-    setPasswordConfirm(event.target.value)
-  }
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault()
-  }
 
   const handleSignUp = async (event) => {
     event.preventDefault()
@@ -78,8 +60,10 @@ const SignUp = () => {
         address: address.value,
         phone: phone.value
       }
+      setSignUpLoading(true)
       await userService.create(userInfo)
       dispatch(createNotification('注册成功', 'success'))
+      setSignUpLoading(false)
       navigate('/login')
     }
     catch (exception) {
@@ -128,65 +112,28 @@ const SignUp = () => {
           注册账号
           </Typography>
           <Box component='form' onSubmit={handleSignUp} sx={{ mt: 1 }} width={250}>
-            <div>
               <TextField {...username} fullWidth required margin='none' size='small' />
-            </div>
-            <div>
-              <FormControl margin='dense' variant="outlined" fullWidth size='small'>
-                <InputLabel htmlFor="outlined-adornment-password">密码</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  type={showPassword ? 'text' : 'password'}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="密码"
-                />
-              </FormControl>
-              <FormControl margin='dense' variant="outlined" fullWidth size='small'>
-                <InputLabel htmlFor="outlined-adornment-password-confirm">确认密码</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-password-confirm"
-                  value={passwordConfirm}
-                  onChange={handlePasswordConfirmChange}
-                  type={showPasswordConfirm ? 'text' : 'password'}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPasswordConfirm}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="确认密码"
-                />
-              </FormControl>
+              <PasswordTextField label='密码' value={password} onChange={setPassword} />
+              <PasswordTextField label='确认密码' value={passwordConfirm} onChange={setPasswordConfirm} />
               <TextField {...address} fullWidth required margin='dense' size='small'/>
               <TextField {...phone} fullWidth required margin='dense' size='small'/>
-              {/* <TextField {...password} fullWidth required margin='dense'/> */}
-            </div>
-            <div>
-              <Button type='submit' variant="contained" fullWidth sx={{ mt: 2, mb: 2 }}>
+              <Button type='submit' variant="contained" fullWidth sx={{ mt: 2, mb: 2 }} disabled={signUpLoading}>
                 <Typography variant='button' fontFamily='Noto Serif SC'>注册新账号</Typography>
               </Button>
-            </div>
-              
-            
+              <Typography 
+                variant='body2' 
+                fontFamily='Noto Serif SC'
+                component={Link}
+                to='/login'
+                sx={{ 
+                  display: 'block', 
+                  textAlign: 'center', 
+                  color: 'gray', 
+                  textDecoration: 'none',
+                }}
+              >
+              返回登陆页面
+              </Typography>
           </Box>
         </Box>
       </Container>

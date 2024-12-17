@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from '@mui/material'
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, CircularProgress } from '@mui/material'
 import { useField } from '../../hooks'
 import { useDispatch, useSelector } from 'react-redux'
 import PasswordTextField from '../PasswordTextField'
 import { createNotification } from '../../reducers/notificationReducer'
 import { updateUser } from '../../reducers/userReducer'
 import userService from '../../services/user'
+import { green } from '@mui/material/colors'
 
 const EditProfileDialog = ({ open, handleClose }) => {
   const dispatch = useDispatch()
@@ -16,6 +17,7 @@ const EditProfileDialog = ({ open, handleClose }) => {
   
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleUpdateProfile = async () => {
     if (password !== passwordConfirm) {
@@ -30,11 +32,27 @@ const EditProfileDialog = ({ open, handleClose }) => {
     }
 
     try {
+      setLoading(true)
       const updatedUser = await userService.update({ username: username.value, phone: phone.value, address: address.value, password })
-      dispatch(createNotification('个人信息更新成功', 'success'))
-      dispatch(updateUser(updatedUser))
-      handleClose()
+      // setLoading(false)
+      // dispatch(createNotification('个人信息更新成功', 'success'))
+      // dispatch(updateUser(updatedUser))
+      // setPassword('')
+      // setPasswordConfirm('')
+      // handleClose()
+      setTimeout(() => {
+        setLoading(false)
+        dispatch(createNotification('个人信息更新成功', 'success'))
+        dispatch(updateUser(updatedUser))
+        setPassword('')
+        setPasswordConfirm('')
+        handleClose()
+      }, 2000)
     } catch (error) {
+      setLoading(false)
+      dispatch(createNotification('个人信息更新失败', 'error'))
+      setPassword('')
+      setPasswordConfirm('')
       console.error('Failed to update user info:', error)
     }
   }
@@ -49,10 +67,21 @@ const EditProfileDialog = ({ open, handleClose }) => {
         <TextField {...address} fullWidth margin="normal" />
         <PasswordTextField label="密码" value={password} onChange={setPassword}  />
         <PasswordTextField label="确认密码" value={passwordConfirm} onChange={setPasswordConfirm} />
+        {loading && (
+          <CircularProgress
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              marginTop: '-12px',
+              marginLeft: '-12px',
+            }}
+          />
+        )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} sx={{ fontFamily: 'Noto Serif SC' }}>取消</Button>
-        <Button onClick={handleUpdateProfile} sx={{ fontFamily: 'Noto Serif SC' }}>保存</Button>
+        <Button onClick={handleClose} sx={{ fontFamily: 'Noto Serif SC' }} disabled={loading}>取消</Button>
+        <Button onClick={handleUpdateProfile} sx={{ fontFamily: 'Noto Serif SC' }} disabled={loading}>保存</Button>
       </DialogActions>
     </Dialog>
   )

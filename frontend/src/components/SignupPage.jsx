@@ -29,7 +29,7 @@ const SignUp = () => {
 
   const user = useSelector(state => state.user)
   if (user.info && !user.loading) {
-    navigate('/posts')
+    navigate('/')
   }
 
   const notification = useSelector(state => state.notification)
@@ -133,7 +133,7 @@ const SignUp = () => {
             </div>
             <div>
               <FormControl margin='dense' variant="outlined" fullWidth size='small'>
-                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                <InputLabel htmlFor="outlined-adornment-password">密码</InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-password"
                   value={password}
@@ -151,7 +151,7 @@ const SignUp = () => {
                       </IconButton>
                     </InputAdornment>
                   }
-                  label="Password"
+                  label="密码"
                 />
               </FormControl>
               <FormControl margin='dense' variant="outlined" fullWidth size='small'>
@@ -173,7 +173,7 @@ const SignUp = () => {
                       </IconButton>
                     </InputAdornment>
                   }
-                  label="Password"
+                  label="确认密码"
                 />
               </FormControl>
               <TextField {...address} fullWidth required margin='dense' size='small'/>

@@ -10,9 +10,9 @@ import ShoppingPage from './components/ShoppingPage'
 import CartsPage from './components/CartsPage'
 import OrdersPage from './components/OrdersPage'
 import ProductPage from "./components/ProductPage"
-import Profile from './components/Profile'
+import ProfilePage from './components/ProfilePage'
 import BillsPage from './components/BillsPage'
-import UserProfile from "./components/UserProfile"
+import UserProfilePage from "./components/UserProfilePage"
 import MyProductPage from "./components/MyProductPage"
 
 function App() {
@@ -32,11 +32,11 @@ function App() {
 
       <Route path= '/products/:id' element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
       {/* 包括他人的基本信息，他人的评论，(商品)等 */} 
-      <Route path='/users/:id' element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+      <Route path='/users/:id' element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
       
       <Route path='/carts' element={<ProtectedRoute><CartsPage /></ProtectedRoute>} />
       <Route path='/orders' element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
-      <Route path='/profile' element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path='/profile' element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       <Route path='/bills' element={<ProtectedRoute><BillsPage /></ProtectedRoute>} />
 
       {/* 展示用户的商品列表，可在此创建商品、修改商品、删除商品 */}

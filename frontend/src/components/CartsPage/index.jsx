@@ -107,7 +107,6 @@ const Cart = () => {
         <Typography variant='h4' gutterBottom sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>
           我的购物车
         </Typography>
-        <Grid container spacing={3}>
           {cart.length > 0 ? (
             cart.map(cartItem => (
               <CartCard
@@ -123,7 +122,6 @@ const Cart = () => {
               购物车为空
             </Typography>
           )}
-        </Grid>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
           <Button variant="contained" onClick={handleCheckout} disabled={selectedCartItems.length === 0} sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>
             结算

@@ -54,7 +54,8 @@ export const login = ( credential ) => {
       dispatch(setUserStatus(true))
       const user = await loginService.login(credential)
       storage.saveUser(user)
-      dispatch(setUser(user))
+      const userWithInfo = await userService.getInfo()
+      dispatch(setUser(userWithInfo))
       dispatch(setUserStatus(false))
     }
     catch (exception) {

@@ -23,6 +23,7 @@ const PasswordTextField = ({ label, value, onChange }) => {
       <OutlinedInput
         id="outlined-adornment-password"
         value={value}
+        required
         onChange={handleChange}
         type={showPassword ? 'text' : 'password'}
         endAdornment={

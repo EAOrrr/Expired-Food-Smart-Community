@@ -160,7 +160,7 @@ const SignUp = () => {
                   id="outlined-adornment-password-confirm"
                   value={passwordConfirm}
                   onChange={handlePasswordConfirmChange}
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPasswordConfirm ? 'text' : 'password'}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton

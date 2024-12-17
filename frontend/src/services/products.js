@@ -65,6 +65,11 @@ const update = async (id, newObject) => {
   return response.data;
 }
 
+const updateStatus = async (id, newObject) => {
+  const response = await axios.put(`${baseUrl}/${id}/status`, newObject)
+  return response.data;
+}
+
 // Returns the deleted product
 const remove = async (id) => {
   const response = await axios.delete(`${baseUrl}/${id}`);
@@ -77,4 +82,5 @@ export default {
   create,
   update,
   remove,
+  updateStatus,
 }

@@ -19,6 +19,9 @@ router.get('/', userExtractor, async (req, res) => {
 
 router.post('/', userExtractor, async (req, res) => {
   const user = req.user;
+  if (!req.user.isAdmin) {
+    return res.status(403).json({ error: 'only admin can send messages' });
+  }
   const { receiverId, content } = req.body;
   const message = await Message.create({
     senderId: user.userId,

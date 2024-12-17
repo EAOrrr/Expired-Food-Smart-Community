@@ -29,35 +29,36 @@ router.get('/me', userExtractor, async (req, res) => {
   const user = req.user
   const { review } = req.query
   console.log(review)
+  const reviewInclude = {
+    include: [
+      {
+        model: User,
+        as: 'Reviewer',
+        attributes: ['username']
+      }
+    ],
+    order: [['createdAt', 'DESC'], ['reviewId', 'DESC']]
+  }
   if (review) {
-    const order = [['createdAt', 'DESC'], ['reviewId', 'DESC']] 
     if (review === 'given') {
-      const givenReviews = await user.getReviewsGiven({
-        order: order
-      })
+      const givenReviews = await user.getReviewsGiven(reviewInclude)
       user.reviews = {
         given: givenReviews
       }
     }
     if (review === 'received') {
-      const receivedReviews = await user.getReviewsReceived({
-        order: order
-      })
+      const receivedReviews = await user.getReviewsReceived(reviewInclude)
       user.reviews = {
         received: receivedReviews.map(review => review.toJSON())
       }
       console.log(user.reviews)
     }
     if (review === 'both') {
-      const givenReviews = await user.getReviewsGiven({
-        order: order
-      })
-      const receivedReviews = await user.getReviewsReceived({
-        order: order
-      })
+      const givenReviews = await user.getReviewsGiven(reviewInclude)
+      const receivedReviews = await user.getReviewsReceived(reviewInclude)
       user.reviews = {
-      given: givenReviews,
-      received: receivedReviews
+        given: givenReviews,
+        received: receivedReviews
       }
     }
   }
@@ -66,7 +67,6 @@ router.get('/me', userExtractor, async (req, res) => {
   userJson.reviews = user.reviews
   res.status(200).json(userJson)
 })
-
 
 router.get('/:userid', userExtractor, async (req, res) => {
   const { userid } = req.params
@@ -83,10 +83,17 @@ router.get('/:userid', userExtractor, async (req, res) => {
       {
         model: Review,
         as: 'ReviewsReceived',
-        attributes: ['reviewId', 'content', 'rating', 'createdAt']
+        attributes: ['reviewId', 'content', 'rating', 'createdAt'],
+        include: [
+          {
+            model: User,
+            as: 'Reviewer',
+            attributes: ['username']
+          }
+        ]
       }
     ],
-    group: ['user.user_id', 'ReviewsReceived.review_id']
+    group: ['user.user_id', 'ReviewsReceived.review_id', 'ReviewsReceived.Reviewer.user_id']
   })
 
   if (!requestedUser) {

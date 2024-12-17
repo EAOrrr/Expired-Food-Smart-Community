@@ -3,7 +3,7 @@ import { Box, Typography, Button, CircularProgress } from '@mui/material'
 import cartsService from '../../services/carts'
 import orderSerivce from '../../services/orders'
 import { createNotification } from '../../reducers/notificationReducer'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { refetchUserInfo } from "../../reducers/userReducer";
 import CartCard from './CartCard'
 import { useNavigate } from 'react-router-dom'
@@ -19,6 +19,7 @@ const Cart = () => {
   const [error, setError] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const user = useSelector(state => state.user.info)
 
   const fetchCart = async () => {
     try {
@@ -53,6 +54,16 @@ const Cart = () => {
     }
 
     console.log('Selected cart items:', selectedCartItems)
+    const sum = selectedCartItems.reduce((acc, id) => {
+      const item = cart.find(item => item.cartId === id)
+      return acc + item.quantity * item.Product.price
+    })
+
+    if (user.balance < sum) {
+      dispatch(createNotification('余额不足', 'error'))
+      setOpen(false)
+      return
+    }
 
     try {
       setConfirmDisabled(true)

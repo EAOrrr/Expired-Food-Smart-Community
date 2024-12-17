@@ -1,5 +1,6 @@
 import React from 'react'
 import { Card, CardContent, Typography, Avatar, Box, Rating } from '@mui/material'
+import { Link } from 'react-router-dom'
 
 const ReviewCard = ({ review }) => {
   const getInitials = (name) => {
@@ -11,7 +12,9 @@ const ReviewCard = ({ review }) => {
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar sx={{ marginRight: 2 }}>{getInitials(review.Reviewer.username)}</Avatar>
+            <Box component={Link} to={`/users/${review.reviewerId}`} sx={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
+              <Avatar sx={{ marginRight: 2 }}>{getInitials(review.Reviewer.username)}</Avatar>
+            </Box>
             <Box>
               <Typography variant="body1" sx={{ fontFamily: 'Noto Serif SC' }}>{review.Reviewer.username}</Typography>
               <Typography variant="body2" color="textSecondary" sx={{ fontFamily: 'Noto Serif SC' }}>{new Date(review.createdAt).toLocaleDateString()}</Typography>

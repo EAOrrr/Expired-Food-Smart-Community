@@ -88,6 +88,11 @@ const ProductPage = () => {
       dispatch(createNotification('商品库存不足', 'error'));
       return;
     }
+    const sum = count * product.price;
+    if (sum > product.Seller.balance) {
+      dispatch(createNotification('您的余额不足', 'error'));
+      return;
+    }
 
     try {
       setConfirmDisabled(true);

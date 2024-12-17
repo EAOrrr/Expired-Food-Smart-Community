@@ -20,6 +20,10 @@ const SellOrderCard = ({ order, userRole, updateOrderStatus, orderType }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
+  const imageSrc = order.Product.Images && order.Product.Images.length > 0
+    ? `/api/images/${order.Product.Images[0].imageId}`
+    : '/src/assets/default.jpg';
+
   const handleClickOpen = (order) => {
     setOpen(true);
   };
@@ -97,7 +101,8 @@ const SellOrderCard = ({ order, userRole, updateOrderStatus, orderType }) => {
       <Card variant="outlined" sx={{ marginBottom: 1, borderRadius: 2, boxShadow: 3, fontFamily: 'Noto Serif SC' }}>
         <CardContent>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+            <Box component='img' src={imageSrc} alt={order.Product.name} style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 2 }} />
+            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, ml: 2 }}>
               <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Noto Serif SC' }}>
                 商品: {order.Product.name}
               </Typography>

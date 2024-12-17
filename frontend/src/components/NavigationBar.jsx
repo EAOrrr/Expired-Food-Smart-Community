@@ -9,7 +9,11 @@ import {
   Avatar,
   Tooltip,
   MenuItem,
-  Menu
+  Menu,
+  TextField,
+  InputAdornment,
+  alpha,
+  useTheme
 } from '@mui/material'
 import { deepPurple } from '@mui/material/colors';
 import { Link } from 'react-router-dom'
@@ -19,6 +23,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import SearchIcon from '@mui/icons-material/Search';
 
 const pages = [
   // { label: '首页', href: '/' },
@@ -36,6 +41,8 @@ const settings = [
   { label: '我的商品', href: '/my-products' },
   { label: '我的消息', href: '/messages' },
 ]
+
+
 
 const UserInfo = ({ user }) => {
   const dispatch = useDispatch()
@@ -119,6 +126,14 @@ const LoginButton = () => (
 
 const NavigationBar = () => {
   const user = useSelector(state => state.user)
+  const theme = useTheme()
+  const [search, setSearch] = useState('')
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      window.location.href = `/?search=${search}`;
+    }
+  };
 
   return (
     <AppBar position='static'>
@@ -139,6 +154,34 @@ const NavigationBar = () => {
               </Button>
             ))}
           </Box>
+          <TextField
+            id="input-with-icon-textfield"
+            placeholder='输入商品的关键词'
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton component={Link} to={`/?search=${search}`}>
+                      <SearchIcon sx={{ color: 'white' }} /> {/* Set icon color to white */}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                style: { color: 'white' } // Set text color to white
+              },
+            }}
+            variant="standard"
+            sx={{
+              backgroundColor: alpha(theme.palette.common.white, 0.15),
+              '&:hover': {
+                backgroundColor: alpha(theme.palette.common.white, 0.25),
+              },
+              mr: 2
+            }}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            type='search'
+            onKeyPress={handleKeyPress}
+          />
           <Box sx={{ flexGrow: 0 }} />
           {user.info
             ? <UserInfo user={user.info}/>

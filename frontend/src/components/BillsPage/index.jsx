@@ -69,6 +69,7 @@ const BillsPage = () => {
         createdAt: new Date().toISOString()
       }].sort((a, b) => ((new Date(b.createdAt) - new Date(a.createdAt)) || a.billId > b.billId)))
       setOpen(false)
+      setAmount(0)
     } catch (error) {
       console.log('存钱失败:', error)
       dispatch(createNotification('存钱失败', 'error'))

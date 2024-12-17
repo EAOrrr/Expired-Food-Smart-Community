@@ -12,6 +12,7 @@ const orderRouter = require('./controllers/orders')
 const reviewRouter = require('./controllers/reviews')
 const imageRouter = require('./controllers/images')
 const billRouter = require('./controllers/bills')
+const messageRouter = require('./controllers/messages')
 
 app.use(cors())
 app.use(express.json())
@@ -26,9 +27,9 @@ app.use('/api/orders', orderRouter)
 app.use('/api/reviews', reviewRouter)
 app.use('/api/images', imageRouter)
 app.use('/api/bills', billRouter)
+app.use*('/api/messages', messageRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
-
 
 module.exports = app

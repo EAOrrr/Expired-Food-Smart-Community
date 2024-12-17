@@ -8,6 +8,7 @@ const { User, Product, Image } = require('../src/models')
 const { connectToDatabase, sequelize } = require('../src/utils/db')
 const path = require('path')
 const fs = require('fs')
+const bcrypt = require('bcrypt')
 
 const user = {
   username: 'testuser',
@@ -27,7 +28,7 @@ beforeEach(async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-describe.only('test product api', () => {
+describe('test product api', () => {
   let token
   let productId
   const product0 = {
@@ -48,7 +49,7 @@ describe.only('test product api', () => {
     productId = response.body.productId
   })
 
-  test.only('create a product', async () => {
+  test('create a product', async () => {
     const productsAtStart = await helper.productsInDb()
     const product = {
       name: 'testproduct1',
@@ -64,9 +65,15 @@ describe.only('test product api', () => {
       .expect('Content-Type', /application\/json/)
     const productsAtEnd = await helper.productsInDb()
     assert.strictEqual(productsAtEnd.length, productsAtStart.length + 1)
+    assert.strictEqual(response.body.name, product.name)
+    assert.strictEqual(response.body.description, product.description)
+    assert.strictEqual(response.body.stock, product.stock)
+    assert.strictEqual(response.body.status, 'pending')
+
   })
 
   test('update a product', async () => {
+    await Product.update({ status: 'active' }, { where: { productId: productId } })
     const product = {
       name: 'testproduct3234',
       price: 100,
@@ -80,6 +87,7 @@ describe.only('test product api', () => {
       .expect(200)
     const updatedProduct = await Product.findByPk(productId)
     assert(updatedProduct.name === product.name)
+    assert(updatedProduct.status === 'pending')
   })
 
   test('delete a product', async () => {
@@ -132,6 +140,54 @@ describe.only('test product api', () => {
     const covers = createdProduct.Images.filter(image => image.isCover);
     assert.strictEqual(covers.length, 1);
   });
+
+})
+
+
+describe('test admin change product status', () => {
+  let token
+  let productId
+  beforeEach(async () => {
+    const normalUser = {
+      username: 'normaluser',
+      password: 'password',
+      phone: '123',
+      address: 'testaddress'
+    }
+    const adminUser = {
+      username: 'adminuser',
+      password: 'password',
+      phone: '124',
+      address: 'testaddress',
+    }
+    const product = {
+      name: 'testproduct',
+      price: 100,
+      description: 'testdescription',
+      stock: 10
+    }
+    const createdUser = await User.create({ ...normalUser, passwordHash: bcrypt.hashSync(normalUser.password, 10) })
+    await User.create({ ...adminUser, passwordHash: bcrypt.hashSync(adminUser.password, 10), isAdmin: true })
+
+    token = await helper.getToken(api, adminUser)
+    const createdProduct = await Product.create({ ...product, sellerId: createdUser.userId })
+    productId = createdProduct.productId
+    assert.strictEqual(createdProduct.status, 'pending')
+  })
+
+  test.only('admin can change product status', async () => {
+    const messsagesAtStart = await helper.messagesInDb()
+    await api
+      .put(`/api/products/${productId}/status`)
+      .send({ status: 'active'})
+      .set('Authorization', `bearer ${token}`)
+      .expect(200)
+    const updatedProduct = await Product.findByPk(productId)
+    const messsagesAtEnd = await helper.messagesInDb()
+    assert.strictEqual(updatedProduct.status, 'active')
+    assert.strictEqual(messsagesAtStart.length + 1, messsagesAtEnd.length)
+  })
+
 
 })
 

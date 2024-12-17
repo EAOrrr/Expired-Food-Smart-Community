@@ -100,6 +100,7 @@ router.put('/me', userExtractor, async (req, res) => {
   const user = req.user
   const body = req.body
   const updatedUser = { ...body }
+  delete updatedUser.isAdmin
 
   if (body.password) {
     if (body.password.length < 6) {

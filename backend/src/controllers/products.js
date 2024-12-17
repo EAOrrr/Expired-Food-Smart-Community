@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { userExtractor } = require('../utils/middleware');
-const { Product, Image, User, Cart } = require('../models');
+const { Product, Image, User, Cart, Message } = require('../models');
 const multer = require('multer');
 const upload = multer();
 
@@ -31,6 +31,8 @@ router.post('/', userExtractor, upload.fields([
   { name: 'images', maxCount: 5 }
 ]), async (req, res) => {
   const { files, body } = req;
+
+  delete body.status
 
   const product = await Product.create({
     ...body,
@@ -87,28 +89,19 @@ router.get('/:id', userExtractor, async (req, res) => {
   res.json(product);
 })
 
-// router.put('/:id', userExtractor, async (req, res) => {
-//   const { body, params } = req;
-//   const product = await Product.findByPk(params.id);
-//   if (!product) {
-//     return res.status(404).end();
-//   }
-//   if (product.sellerId !== req.user.userId) {
-//     return res.status(403).json({ error: 'no permission' });
-//   }
-//   await product.update(body);
-//   res.json(product);
-// })
-
 
 router.put('/:id', userExtractor, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'images', maxCount: 8 }]), async (req, res) => {
   const { id } = req.params;
-  const { name, price, description, stock, expiryDate, deletedImages } = req.body;
+  const { name, price, description, stock, expiryDate, deletedImages, status } = req.body;
   const files = req.files;
 
   const product = await Product.findByPk(id);
   if (!product) {
     return res.status(404).json({ error: 'Product not found' });
+  }
+
+  if (product.sellerId !== req.user.userId) {
+    return res.status(403).json({ error: 'no permission' });
   }
 
   // 更新产品信息
@@ -117,6 +110,7 @@ router.put('/:id', userExtractor, upload.fields([{ name: 'cover', maxCount: 1 },
   product.description = description || product.description;
   product.stock = stock || product.stock;
   product.expiryDate = expiryDate || product.expiryDate;
+  product.status = 'pending';
   await product.save();
 
   // 删除指定的图片
@@ -125,6 +119,10 @@ router.put('/:id', userExtractor, upload.fields([{ name: 'cover', maxCount: 1 },
   }
 
   const existingImagesCount = await Image.count({ where: { productId: id } });
+  
+  if (!files) {
+    return res.json(product);
+  }
 
   // 更新封面图片
   if (files.cover) {
@@ -172,6 +170,34 @@ router.put('/:id', userExtractor, upload.fields([{ name: 'cover', maxCount: 1 },
 
     res.json(updatedProduct);
 });
+
+router.put('/:id/status', userExtractor, async (req, res) => {
+  if (!req.user.isAdmin) {
+    return res.status(403).json({ error: 'no permission' });
+  }
+  const { id } = req.params;
+  const { status } = req.body;
+  const product = await Product.findByPk(id);
+  if (!product) {
+    return res.status(404).json({ error: 'Product not found' });
+  }
+
+  product.status = status || product.status;
+  if (status !== 'active' && status !== 'fail') {
+    return res.status(400).json({ error: 'invalid status' });
+  }
+  await product.save();
+  const content = status === 'active'
+    ? `你的商品 ${product.name} 通过审核，已上架`
+    : `你的商品 ${product.name} 未通过审核，请重新编辑`;
+  await Message.create({
+    senderId: req.user.userId,
+    receiverId: product.sellerId,
+    content: content,
+  })
+  return res.json(product);
+
+})
 
 
 router.delete('/:id', userExtractor, async (req, res) => {

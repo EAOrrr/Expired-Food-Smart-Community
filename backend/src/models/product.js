@@ -38,6 +38,14 @@ Product.init({
       key: 'user_id', // key in the target model
     }
   },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      isIn: [['pending', 'active', 'fail']]
+    },
+    defaultValue: 'pending'
+  }
 }, {
   sequelize,
   underscored: true,

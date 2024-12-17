@@ -17,18 +17,24 @@ import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../reducers/userReducer'
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 const pages = [
   // { label: '首页', href: '/' },
-  { label: '商品查看', href: '/shopping' },
-  { label: '我的购物车', href: '/carts' },
-  { label: '我的订单', href: '/orders' },
-  { label: '我的商品', href: '/my-products' }
+  { label: '首页', href: '/' },
+  // { label: '我的购物车', href: '/carts' },
+  // { label: '我的订单', href: '/orders' },
+  // { label: '我的商品', href: '/my-products' }
 ]
 const settings = [
   { label: '个人信息', href: '/profile' },
   { label: '查看余额', href: '/bills' },
-  { label: '设置', href: '/settings' }
+  { label: '我的购物车', href: '/carts' },
+  { label: '我的销售订单', href: '/sell-orders' },
+  { label: '我的购买订单', href: '/buy-orders' },
+  { label: '我的商品', href: '/my-products' },
+  { label: '我的消息', href: '/messages' },
 ]
 
 const UserInfo = ({ user }) => {
@@ -85,6 +91,16 @@ const UserInfo = ({ user }) => {
           <Typography sx={{ textAlign: 'center' }}>退出登录</Typography>
         </MenuItem>
       </Menu>
+      <Tooltip title="消息">
+        <IconButton component={Link} to='/messages' sx={{ color: 'white' }}>
+          <NotificationsIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="购物车">
+        <IconButton component={Link} to='/carts' sx={{ color: 'white' }}>
+          <ShoppingCartIcon />
+        </IconButton>
+      </Tooltip>
     </Box>
   )
 }

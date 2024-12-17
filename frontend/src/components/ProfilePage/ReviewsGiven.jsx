@@ -41,7 +41,7 @@ const ReviewsGiven = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '75vh' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center' }}>
         <CircularProgress size={60} />
       </Box>
     )
@@ -49,7 +49,7 @@ const ReviewsGiven = () => {
 
   if (error) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '75vh'}}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center'}}>
         <ErrorIcon sx={{ fontSize: 60 , color: 'red' }} />
         <Typography variant="h6" sx={{ ml: 2, fontFamily: 'Noto Serif SC' }}>获取评论失败</Typography>
       </Box>

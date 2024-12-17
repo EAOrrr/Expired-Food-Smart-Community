@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Box, Typography, List, Tab, Tabs } from '@mui/material'
 import ordersService from '../../services/orders'
 import reviewService from '../../services/review'
-import OrderCard from './OrderCard'
+import OrderCard from '../OrderCard'
 import OrderList from './OrderList'
 
 /*

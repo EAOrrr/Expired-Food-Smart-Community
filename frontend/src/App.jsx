@@ -8,12 +8,14 @@ import { initializeUser } from "./reducers/userReducer"
 import NotificationDisplay from "./components/NotificationDisplay"
 import ShoppingPage from './components/ShoppingPage'
 import CartsPage from './components/CartsPage'
-import OrdersPage from './components/OrdersPage'
+// import OrdersPage from './components/OrdersPage'
 import ProductPage from "./components/ProductPage"
 import ProfilePage from './components/ProfilePage'
 import BillsPage from './components/BillsPage'
 import UserProfilePage from "./components/UserProfilePage"
 import MyProductPage from "./components/MyProductPage"
+import SellOrdersPage from "./components/SellOrdersPage"
+import BuyOrdersPage from "./components/BuyOrdersPage"
 
 function App() {
   const dispatch = useDispatch()
@@ -31,11 +33,12 @@ function App() {
       <Route path='/sign-up' element={!user.loading && user.info ? <Navigate to='/'/> : <SignUpPage />} />
 
       <Route path= '/products/:id' element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
-      {/* 包括他人的基本信息，他人的评论，(商品)等 */} 
       <Route path='/users/:id' element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
       
       <Route path='/carts' element={<ProtectedRoute><CartsPage /></ProtectedRoute>} />
-      <Route path='/orders' element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+      {/* <Route path='/orders' element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} /> */}
+      <Route path='/sell-orders' element={<ProtectedRoute><SellOrdersPage /></ProtectedRoute>} />
+      <Route path='/buy-orders' element={<ProtectedRoute><BuyOrdersPage /></ProtectedRoute>} />
       <Route path='/profile' element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       <Route path='/bills' element={<ProtectedRoute><BillsPage /></ProtectedRoute>} />
 

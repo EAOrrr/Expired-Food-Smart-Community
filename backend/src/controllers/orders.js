@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { userExtractor } = require('../utils/middleware');
-const { Order, Product, User, Cart, IdempotencyKey } = require('../models');
+const { Order, Product, User, Cart, IdempotencyKey, Image } = require('../models');
 const { sequelize } = require('../utils/db');
 
 router.get('/buy', userExtractor, async (req, res) => {
@@ -12,6 +12,13 @@ router.get('/buy', userExtractor, async (req, res) => {
     include: {
       model: Product,
       as: 'Product',
+      include: {
+        model: Image,
+        as: 'Images',
+        attributes: ['imageId'],
+        where: { isCover: true },
+        required: false
+      }
     }
   })
   res.json(orders)
@@ -26,6 +33,13 @@ router.get('/sell', userExtractor, async (req, res) => {
     include: {
       model: Product,
       as: 'Product',
+      include: {
+        model: Image,
+        as: 'Images',
+        attributes: ['imageId'],
+        where: { isCover: true },
+        required: false,
+      }
     }
   })
   res.json(orders)

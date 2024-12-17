@@ -24,7 +24,8 @@ module.exports = {
         references: {
           model: 'products',
           key: 'product_id',
-        }
+        },
+        onDelete: 'SET NULL',
       },
       quantity: {
         type: DataTypes.INTEGER,

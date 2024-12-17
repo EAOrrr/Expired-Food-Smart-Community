@@ -24,7 +24,8 @@ Cart.init({
     references: {
       model: 'products', // name of the target model
       key: 'product_id', // key in the target model
-    }
+    },
+    onDelete: 'SET NULL'
   },
   quantity: {
     type: DataTypes.INTEGER,

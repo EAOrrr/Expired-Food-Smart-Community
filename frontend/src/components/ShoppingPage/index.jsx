@@ -6,6 +6,8 @@ import { createNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 import ProductCard from './ProductCard'
 import ProductList from './ProductList'
+import CircularProgress from '@mui/material/CircularProgress'
+import ErrorIcon from '@mui/icons-material/Error'
 
 /*
   * 商品页面
@@ -15,26 +17,47 @@ import ProductList from './ProductList'
 
 const ShoppingPage = () => {
   const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
   const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true)
         const products = await productsService.getAll()
         setProducts(products)
+        setError(false)
       } catch (error) {
-        console.error('Failed to fetch products:', error) // 添加错误日志
+        console.error('Failed to fetch products:', error)
         dispatch(createNotification('获取商品失败', 'error'))
+        setError(true)
       }
+      setLoading(false)
     }
     fetchProducts()
   }, [dispatch])
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress size={60} />
+      </Box>
+    )
+  }
 
+  if (error) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <ErrorIcon sx={{ fontSize: 60, color: 'red' }} />
+        <Typography variant="h6" sx={{ ml: 2, fontFamily: 'Noto Serif SC' }}>获取商品失败</Typography>
+      </Box>
+    )
+  }
 
   return (
     <>
-      <Box sx={{fontFamily: 'Noto Serif SC' }}>
+      <Box sx={{ fontFamily: 'Noto Serif SC' }}>
         <h1> 
           商品列表
         </h1>

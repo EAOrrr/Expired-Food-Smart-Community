@@ -6,11 +6,13 @@ import ordersService from "../../services/orders";
 import { createNotification } from "../../reducers/notificationReducer";
 import { refetchUserInfo, updateUser } from "../../reducers/userReducer";
 import Count from "../Count";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Box, IconButton, Avatar, Typography, Container, Grid, Paper } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Box, IconButton, Avatar, Typography, Container, Grid, Paper, CircularProgress } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { deepOrange } from "@mui/material/colors";
 import CheckoutTable from "../CheckoutTable";
 import CarouselSlide from "./CarouselSlide";
+import ErrorIcon from '@mui/icons-material/Error';
+import DialogCheckout from "./DialogCheckout";
 
 /*
 TODO:
@@ -28,17 +30,24 @@ const ProductPage = () => {
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [confirmDisabled, setConfirmDisabled] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        setLoading(true);
         const product = await productsService.getOne(id);
         const cart = product.Carts.length > 0 ? product.Carts[0] : null;
         setProduct(product);
         setCart(cart);
         setCount(cart ? cart.quantity : 1);
+        setError(false);
       } catch (error) {
         console.error('Failed to fetch product:', error);
+        setError(true);
+      } finally {
+        setLoading(false);
       }
     }
     fetchProduct();
@@ -80,36 +89,41 @@ const ProductPage = () => {
       return;
     }
 
-    // Add logic to handle purchase confirmation
     try {
       setConfirmDisabled(true);
+      setLoading(true);
       const newOrder = await ordersService.createByProduct({ productId: product.productId, quantity: count });
       setOpen(false);
       dispatch(createNotification('订单已生成', 'success'));
       dispatch(refetchUserInfo());
       setConfirmDisabled(false);
-      // dispatch(updateUser({ balance: - newOrder.total}));
-      navigate('/orders');
+      setLoading(false);
+      navigate('/buy-orders');
     } catch (error) {
       console.error('Failed to create order:', error);
       setConfirmDisabled(false);
+      setLoading(false);
       dispatch(createNotification('订单生成失败', 'error'));
       setOpen(false);
     }
   };
 
-  const DialogCheckout = () => (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>账单确认</DialogTitle>
-      <DialogContent>
-        <CheckoutTable products={[{ ...product, quantity: count }]} />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>取消</Button>
-        <Button onClick={handleConfirmPurchase} disabled={confirmDisabled}>确认</Button>
-      </DialogActions>
-    </Dialog>
-  );
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center' }}>
+        <CircularProgress size={60} />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center'}}>
+        <ErrorIcon sx={{ fontSize: 60 , color: 'red' }} />
+        <Typography variant="h6" sx={{ ml: 2, fontFamily: 'Noto Serif SC' }}>获取商品失败</Typography>
+      </Box>
+    )
+  }
 
   if (!product) {
     return (
@@ -143,7 +157,14 @@ const ProductPage = () => {
               <Count count={count} setCount={setCount} handleUpdate={handleUpdateValue}/>
               <Button variant="contained" color="primary" onClick={handleAddToCart} style={{ marginRight: '10px' }}>加入购物车</Button>
               <Button variant="contained" color="secondary" onClick={handlePurchase}>直接购买</Button>
-              <DialogCheckout />
+              <DialogCheckout 
+                open={open} 
+                handleClose={handleClose} 
+                handleConfirmPurchase={handleConfirmPurchase} 
+                confirmDisabled={confirmDisabled} 
+                product={product} 
+                count={count} 
+              />
             </Grid>
           </Grid>
         </Paper>

@@ -5,23 +5,34 @@ import userService from '../../services/user'
 import Loading from '../Loading'
 import { useDispatch, useSelector } from 'react-redux'
 import BillCard from './BillCard'
-import { Container, Typography, List, Button, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material'
+import { Container, Typography, List, Button, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, CircularProgress } from '@mui/material'
 import { createNotification } from '../../reducers/notificationReducer'
 import { updateUser } from '../../reducers/userReducer'
+import ErrorIcon from '@mui/icons-material/Error'
 
 const BillsPage = () => {
   const [bills, setBills] = useState([])
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState(0)
   const [depositing, setDepositing] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const user = useSelector(state => state.user.info)
   const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchBills = async () => {
-      const bills = await billService.getAll()
-      console.log(bills)
-      setBills(bills)
+      try {
+        setLoading(true)
+        const bills = await billService.getAll()
+        setBills(bills)
+        setError(false)
+      } catch (error) {
+        console.error('Failed to fetch bills:', error)
+        setError(true)
+      } finally {
+        setLoading(false)
+      }
     }
     fetchBills()
   }, [])
@@ -53,7 +64,7 @@ const BillsPage = () => {
         amount: parseFloat(amount).toFixed(2),
         operation: 'deposit',
         createdAt: new Date().toISOString()
-      }].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)))
+      }].sort((a, b) => ((new Date(b.createdAt) - new Date(a.createdAt)) || a.billId > b.billId)))
     } catch (error) {
       console.log('存钱失败:', error)
       dispatch(createNotification('存钱失败', 'error'))
@@ -76,6 +87,23 @@ const BillsPage = () => {
     }
     setOpen(false)
     setDepositing(false)
+  }
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center' }}>
+        <CircularProgress size={60} />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center'}}>
+        <ErrorIcon sx={{ fontSize: 60 , color: 'red' }} />
+        <Typography variant="h6" sx={{ ml: 2, fontFamily: 'Noto Serif SC' }}>获取账单失败</Typography>
+      </Box>
+    )
   }
 
   if (!user) {

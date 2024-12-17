@@ -1,4 +1,4 @@
-import { Grid2 as Grid, Card, CardContent, Typography, CardActionArea, CardMedia, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Grid2 as Grid, Card, CardContent, Typography, CardActionArea, CardMedia, Dialog, DialogTitle, DialogContent, CardActions, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import ProductForm from './ProductForm';
@@ -10,7 +10,7 @@ import { createNotification } from '../../reducers/notificationReducer';
 /* TODO: 美化 */
 
 
-const ProductCard = ({ product, onUpdate }) => {
+const ProductCard = ({ product, onUpdate, onDelete }) => {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch()
   
@@ -33,6 +33,16 @@ const ProductCard = ({ product, onUpdate }) => {
       console.error('Failed to update product:', error);
     }
   };
+
+  const handleDeleteProduct = async () => {
+    try {
+      await productsService.remove(product.productId);
+      dispatch(createNotification('商品已删除', 'success'))
+      onDelete(product.productId)
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+    }
+  }
 
   return (
     <Grid item="true" id={product.productId} size={{ xs: 12, md: 4 }}>
@@ -61,6 +71,11 @@ const ProductCard = ({ product, onUpdate }) => {
           </Typography>
         </CardContent>
         </CardActionArea>
+        <CardActions>
+          <Button onClick={handleDeleteProduct} color='error'>
+            删除
+          </Button>
+        </CardActions>
       </Card>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>编辑商品</DialogTitle>

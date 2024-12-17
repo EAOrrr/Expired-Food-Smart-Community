@@ -25,16 +25,17 @@ User.hasMany(Order, { foreignKey: 'SellerId', as: 'SellerOrders' });
 Order.belongsTo(User, { foreignKey: 'SellerId', as: 'Seller' });
 
 // 商品与订单之间的关系： 一个商品可以有多个订单，一个订单只能属于一个商品
-Product.hasMany(Order, { foreignKey: 'ProductId', as: 'Orders', onDelete: 'CASCADE' });
-Order.belongsTo(Product, { foreignKey: 'ProductId', as: 'Product', onDelete: 'CASCADE' });
+Product.hasMany(Order, { foreignKey: 'ProductId', as: 'Orders', onDelete: 'SET NULL' });
+Order.belongsTo(Product, { foreignKey: 'ProductId', as: 'Product', onDelete: 'SET NULL' });
 
 // 用户与购物车之间的关系： 一个用户可以有多个购物车，一个购物车只能属于一个用户
 User.hasMany(Cart, { foreignKey: 'UserId', as: 'Carts', onDelete: 'CASCADE' });
 Cart.belongsTo(User, { foreignKey: 'UserId', as: 'User', onDelete: 'CASCADE' });
 
 // 商品与购物车之间的关系： 一个商品可以有多个购物车，一个购物车只能属于一个商品
-Product.hasMany(Cart, { foreignKey: 'ProductId', as: 'Carts' });
-Cart.belongsTo(Product, { foreignKey: 'ProductId', as: 'Product' });
+Product.hasMany(Cart, { foreignKey: 'ProductId', as: 'Carts', onDelete: 'SET NULL' });
+Cart.belongsTo(Product, { foreignKey: 'ProductId', as: 'Product', onDelete: 'SET NULL' });
+
 
 // 用户与幂等键之间的关系： 一个用户可以有多个幂等键，一个幂等键只能属于一个用户
 User.hasMany(IdempotencyKey, { foreignKey: 'UserId', as: 'IdempotencyKeys', onDelete: 'CASCADE' });

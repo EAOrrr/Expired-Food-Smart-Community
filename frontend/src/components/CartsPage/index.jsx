@@ -1,34 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Typography, Grid, Card, CardContent, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { Box, Typography, Button, CircularProgress } from '@mui/material'
 import cartsService from '../../services/carts'
 import orderSerivce from '../../services/orders'
 import { createNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
-import Count from '../Count'
 import { refetchUserInfo } from "../../reducers/userReducer";
-import CheckoutTable from '../CheckoutTable'
 import CartCard from './CartCard'
 import { useNavigate } from 'react-router-dom'
-
-
-// 1. Count 组件: [value, setValue] = useState(number), handleUpdate = (value) => boolean
-// 2. 建议分开CartCard组件
-
+import ErrorIcon from '@mui/icons-material/Error'
+import CheckoutDialog from './CheckoutDialog'
 
 const Cart = () => {
   const [cart, setCart] = useState([])
   const [selectedCartItems, setSelectedCartItems] = useState([])
   const [open, setOpen] = useState(false)
   const [confirmDisabled, setConfirmDisabled] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const fetchCart = async () => {
     try {
+      setLoading(true)
       const cartItems = await cartsService.getAll()
       setCart(cartItems)
+      setError(false)
     } catch (error) {
       console.error('Failed to fetch cart items:', error)
+      setError(true)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -54,6 +56,7 @@ const Cart = () => {
 
     try {
       setConfirmDisabled(true)
+      setLoading(true)
       await orderSerivce.createByCart({ cartIds: selectedCartItems })
       setCart(cart.filter(item => !selectedCartItems.includes(item.cartId)))
       setSelectedCartItems([])
@@ -61,10 +64,12 @@ const Cart = () => {
       dispatch(refetchUserInfo())
       setOpen(false)
       setConfirmDisabled(false)
+      setLoading(false)
 
       navigate('/orders')
     } catch (error) {
       setConfirmDisabled(false)
+      setLoading(false)
       console.error('Failed to checkout:', error)
       console.error('Error details:', error.response ? error.response.data : error.message)
       dispatch(createNotification('结算失败', 'error'))
@@ -101,6 +106,23 @@ const Cart = () => {
     }
   }
 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center' }}>
+        <CircularProgress size={60} />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center'}}>
+        <ErrorIcon sx={{ fontSize: 60 , color: 'red' }} />
+        <Typography variant="h6" sx={{ ml: 2, fontFamily: 'Noto Serif SC' }}>获取购物车失败</Typography>
+      </Box>
+    )
+  }
+
   return (
     <>
       <Box sx={{ p: 3 }}>
@@ -127,16 +149,14 @@ const Cart = () => {
             结算
           </Button>
         </Box>
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>账单确认</DialogTitle>
-          <DialogContent>
-            <CheckoutTable products={cart.filter(item => selectedCartItems.includes(item.cartId)).map(item => ({ ...item.Product, quantity: item.quantity }))} />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>取消</Button>
-            <Button disabled={confirmDisabled} onClick={handleConfirmCheckout} sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>确认</Button>
-          </DialogActions>
-        </Dialog>
+        <CheckoutDialog
+          open={open}
+          onClose={handleClose}
+          onConfirm={handleConfirmCheckout}
+          cart={cart}
+          selectedCartItems={selectedCartItems}
+          confirmDisabled={confirmDisabled}
+        />
       </Box>
     </>
   )

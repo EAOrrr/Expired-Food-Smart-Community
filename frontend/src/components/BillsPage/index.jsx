@@ -45,6 +45,7 @@ const BillsPage = () => {
     setOpen(false)
   }
 
+  console.log(depositing)
   const handleConfirm = async () => {
     // Handle deposit logic here
     // console.log('存钱金额:', amount)
@@ -55,6 +56,8 @@ const BillsPage = () => {
     }
     try {
       setDepositing(true)
+      console.log('存钱中:', amount)
+      console.log('depositing:', depositing)
       const userBalanceAfterDeposit = await userService.deposit(amount)
       setDepositing(false)
       console.log('存钱成功:', userService)
@@ -65,6 +68,7 @@ const BillsPage = () => {
         operation: 'deposit',
         createdAt: new Date().toISOString()
       }].sort((a, b) => ((new Date(b.createdAt) - new Date(a.createdAt)) || a.billId > b.billId)))
+      setOpen(false)
     } catch (error) {
       console.log('存钱失败:', error)
       dispatch(createNotification('存钱失败', 'error'))
@@ -84,9 +88,9 @@ const BillsPage = () => {
         default:
           dispatch(createNotification('存钱失败: 未知错误', 'error'))
       }
+      setOpen(false)
+      setDepositing(false)
     }
-    setOpen(false)
-    setDepositing(false)
   }
 
   if (loading) {
@@ -143,7 +147,8 @@ const BillsPage = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>取消</Button>
-          <Button onClick={handleConfirm}>确认</Button>
+          <Button onClick={handleConfirm} disabled={depositing}>确认</Button>
+          {depositing && <CircularProgress size={24} />}
         </DialogActions>
       </Dialog>
     </Container>

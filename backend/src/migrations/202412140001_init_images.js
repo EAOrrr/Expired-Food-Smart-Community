@@ -24,6 +24,7 @@ module.exports = {
           model: 'products',
           key: 'product_id',
         },
+        onDelete: 'CASCADE',
       },
       created_at: {
         type: DataTypes.DATE,

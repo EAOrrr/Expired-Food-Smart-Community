@@ -26,7 +26,8 @@ Image.init({
     references: {
       model: 'products',
       key: 'productId',
-    }
+    },
+    onDelete: 'CASCADE',
   },
   isCover: {
     type: DataTypes.BOOLEAN,

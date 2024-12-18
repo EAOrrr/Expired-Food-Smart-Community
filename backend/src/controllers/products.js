@@ -29,10 +29,8 @@ router.get('/', userExtractorAllowingNull, async (req, res) => {
     attributes: {
       exclude: ['sellerId']
     },
-    where: [
-      status ? { status } : {},
+    where: 
       userId ? { sellerId: userId } : {}
-    ]
   });
   res.json(products);
 })

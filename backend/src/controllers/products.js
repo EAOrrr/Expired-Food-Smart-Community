@@ -1,11 +1,19 @@
 const router = require('express').Router();
-const { userExtractor } = require('../utils/middleware');
+const { userExtractor, userExtractorAllowingNull } = require('../utils/middleware');
 const { Product, Image, User, Cart, Message } = require('../models');
 const multer = require('multer');
 const upload = multer();
 
-router.get('/', async (req, res) => {
-  const userId = req.query.userId;
+router.get('/', userExtractorAllowingNull, async (req, res) => {
+  const { userId, status } = req.query;
+  // if (req.user && (!req.user.isAdmin && status !== 'active')) {
+  //   return res.status(403).json({ error: 'no permission' });
+  // }
+
+  if (status && status !== 'active' && status !== 'pending' && status !== 'fail') {
+    return res.status(400).json({ error: 'invalid status' });
+  }
+
   const products = await Product.findAll({
     include: [{
       model: User,
@@ -21,7 +29,10 @@ router.get('/', async (req, res) => {
     attributes: {
       exclude: ['sellerId']
     },
-    where: userId ? { sellerId: userId } : {}
+    where: [
+      status ? { status } : {},
+      userId ? { sellerId: userId } : {}
+    ]
   });
   res.json(products);
 })

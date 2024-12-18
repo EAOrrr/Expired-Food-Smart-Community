@@ -5,7 +5,8 @@ const data = [
     phone: '1234567890',
     password: 'password',
     address: '123 Main St',
-    balance: '240.00'
+    balance: '240.00',
+    isAdmin: true,
   },
   {
     userId: '2e7b1d9e-2d9e-4e7b-9e2d-9e2d9e2d9e2d',

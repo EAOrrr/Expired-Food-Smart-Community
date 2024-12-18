@@ -78,6 +78,29 @@ const userExtractor = async (req, res, next) => {
   next()
 }
 
+const userExtractorAllowingNull = async (req, res, next) => {
+  const token = getTokenFrom(req)
+
+  if (!token) {
+    return next()
+  }
+
+  const decodedToken = jwt.verify(token, ACCESS_TOKEN_SECRET)
+  if (!decodedToken.id) {
+    return next()
+  }
+
+  const user = await User.findByPk(decodedToken.id)
+
+  if (!user) {
+    return next()
+  }
+
+  req.user = user
+
+  next()
+}
+
 
 
 const unknownEndpoint = (req, res) => {
@@ -88,5 +111,6 @@ module.exports = {
   requestLogger,
   errorHandler,
   userExtractor,
+  userExtractorAllowingNull,
   unknownEndpoint
 }

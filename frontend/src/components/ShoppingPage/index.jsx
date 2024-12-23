@@ -55,6 +55,14 @@ const ShoppingPage = () => {
     )
   }
 
+  if (products.length === 0) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Typography variant="h6" sx={{ fontFamily: 'Noto Serif SC' }}>暂无商品</Typography>
+      </Box>
+    )
+  }
+
   return (
     <>
       <Box sx={{ fontFamily: 'Noto Serif SC' }}>

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Box, List, Tab, Tabs, Typography } from '@mui/material'
+import { Box, List, Tab, Tabs, Typography, CircularProgress } from '@mui/material'
 import OrderCard from '../OrderCard'
 import ordersService from '../../services/orders'
+import ErrorIcon from '@mui/icons-material/Error'
 
 // Remove Selector component
 
@@ -10,21 +11,30 @@ const BuyOrderList = () => {
     const user = useSelector(state => state.user)
     const [buyOrders, setBuyOrders] = useState([])
     const [tabIndex, setTabIndex] = useState(0)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(false)
     // Remove sellFilter state
     // const [sellFilter, setSellFilter] = useState('all')
 
     const fetchOrders = async () => {
-        if (user.info) {
-            const buy = await ordersService.getAllBuyOrders()
-            setBuyOrders(buy)
+        try {
+            setLoading(true)
+            if (user.info) {
+                const buy = await ordersService.getAllBuyOrders()
+                setBuyOrders(buy)
+                setError(false)
+            }
+        } catch (error) {
+            console.error('Failed to fetch orders:', error)
+            setError(true)
+        } finally {
+            setLoading(false)
         }
     }
 
     useEffect(() => {
         fetchOrders()
     }, [user])
-
-    
 
     // Remove handleSellFilterChange
     // const handleSellFilterChange = (event) => {
@@ -61,6 +71,34 @@ const BuyOrderList = () => {
             setBuyOrders(prevOrders => updateOrders(prevOrders));
         }
     };
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center' }}>
+                <CircularProgress size={60} />
+            </Box>
+        )
+    }
+
+    if (error) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'center'}}>
+                <ErrorIcon sx={{ fontSize: 60 , color: 'red' }} />
+                <Typography variant="h6" sx={{ ml: 2, fontFamily: 'Noto Serif SC' }}>获取订单失败</Typography>
+            </Box>
+        )
+    }
+
+    if (buyOrders.length === 0) {
+        return (
+            <Box p={3}>
+                <Typography variant='h4' gutterBottom sx={{ fontFamily: 'Noto Serif SC', fontWeight: 'bold' }}>
+                    我的购买订单
+                </Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Noto Serif SC' }}>暂无订单</Typography>
+            </Box>
+        )
+    }
 
     return (
         <Box p={3}>

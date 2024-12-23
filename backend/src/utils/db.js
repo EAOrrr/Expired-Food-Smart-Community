@@ -4,22 +4,22 @@ const path = require('path')
 const { DATABASE_URL } = require('./config')
 
 // connect docker postgresql database
-const sequelize = new Sequelize(DATABASE_URL, )
+// const sequelize = new Sequelize(DATABASE_URL, )
 
 
 // connect azure postgresql database
-// const sequelize = new Sequelize(DATABASE_URL,
-//   {
-//     dialect: 'postgres',
-//     dialectOptions: {
-//       entrypt: true,
-//       ssl: {
-//         require: true,
-//         rejectUnauthorized: false
-//       }
-//     },
-//   }
-// )
+const sequelize = new Sequelize(DATABASE_URL,
+  {
+    dialect: 'postgres',
+    dialectOptions: {
+      entrypt: true,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+  }
+)
 
 // connect heroku postgresql database
 // const sequelize = new Sequelize(DATABASE_URL, {

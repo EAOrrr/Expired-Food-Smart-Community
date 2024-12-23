@@ -115,6 +115,14 @@ const BillsPage = () => {
     return <Loading message='用户账单加载中'/>
   }
 
+  if (bills.length === 0) {
+    return (
+      <Container sx={{ fontFamily: 'Noto Serif SC' }}>
+        <Typography variant="h6" sx={{ fontFamily: 'Noto Serif SC' }}>暂无账单</Typography>
+      </Container>
+    )
+  }
+
   return (
     <Container sx={{ fontFamily: 'Noto Serif SC' }}>
       <h1>我的账单</h1>

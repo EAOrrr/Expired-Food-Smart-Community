@@ -240,7 +240,7 @@ router.post('/cart', userExtractor, async (req, res) => {
     });
   } catch (error) {
     if (!t.finished) await t.rollback();
-    throw(error)
+    // throw(error)
     res.status(400).json({ error: error.message });
   }
 });

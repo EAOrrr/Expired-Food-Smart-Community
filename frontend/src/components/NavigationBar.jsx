@@ -26,12 +26,14 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
 
 const pages = [
-  // { label: '首页', href: '/' },
   { label: '首页', href: '/' },
-  // { label: '我的购物车', href: '/carts' },
-  // { label: '我的订单', href: '/orders' },
-  // { label: '我的商品', href: '/my-products' }
 ]
+
+const adminPage = [
+  { label: '管理商品', href: '/admin' },
+  { label: '发布信息', href: '/admin/publish' },
+]
+
 const settings = [
   { label: '个人信息', href: '/profile' },
   { label: '查看余额', href: '/bills' },
@@ -144,6 +146,16 @@ const NavigationBar = () => {
             flexGrow: 1
           }}>
             {pages.map(page => (
+              <Button
+                key={page.label}
+                component={Link}
+                to={page.href}
+                sx={{ mx: 1, color: 'white', display: 'block' }}
+              >
+                {page.label}
+              </Button>
+            ))}
+            {user.info && user.info.isAdmin && adminPage.map(page => (
               <Button
                 key={page.label}
                 component={Link}

@@ -29,10 +29,10 @@ const pages = [
   { label: '首页', href: '/' },
 ]
 
-const adminPage = [
-  { label: '管理商品', href: '/admin' },
-  { label: '发布信息', href: '/admin/publish' },
-]
+// const adminPage = [
+//   { label: '管理商品', href: '/admin' },
+//   { label: '发布信息', href: '/admin/publish' },
+// ]
 
 const settings = [
   { label: '个人信息', href: '/profile' },
@@ -41,7 +41,7 @@ const settings = [
   { label: '我的销售订单', href: '/sell-orders' },
   { label: '我的购买订单', href: '/buy-orders' },
   { label: '我的商品', href: '/my-products' },
-  { label: '我的消息', href: '/messages' },
+  // { label: '我的消息', href: '/messages' },
 ]
 
 
@@ -100,11 +100,11 @@ const UserInfo = ({ user }) => {
           <Typography sx={{ textAlign: 'center' }}>退出登录</Typography>
         </MenuItem>
       </Menu>
-      <Tooltip title="消息">
+      {/* <Tooltip title="消息">
         <IconButton component={Link} to='/messages' sx={{ color: 'white' }}>
           <NotificationsIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
       <Tooltip title="购物车">
         <IconButton component={Link} to='/carts' sx={{ color: 'white' }}>
           <ShoppingCartIcon />
@@ -155,7 +155,7 @@ const NavigationBar = () => {
                 {page.label}
               </Button>
             ))}
-            {user.info && user.info.isAdmin && adminPage.map(page => (
+            {/* {user.info && user.info.isAdmin && adminPage.map(page => (
               <Button
                 key={page.label}
                 component={Link}
@@ -164,7 +164,7 @@ const NavigationBar = () => {
               >
                 {page.label}
               </Button>
-            ))}
+            ))} */}
           </Box>
           <TextField
             id="input-with-icon-textfield"

@@ -19,11 +19,11 @@ const SellOrderCard = ({ order, userRole, updateOrderStatus, orderType }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-
+  console.log(order)
   const imageSrc = order.Product.Images && order.Product.Images.length > 0
     ? `/api/images/${order.Product.Images[0].imageId}`
     : '/src/assets/default.jpg';
-
+  console.log(imageSrc)
   const handleClickOpen = (order) => {
     setOpen(true);
   };

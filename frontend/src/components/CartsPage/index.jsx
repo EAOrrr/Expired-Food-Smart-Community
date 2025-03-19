@@ -54,10 +54,9 @@ const Cart = () => {
     }
 
     console.log('Selected cart items:', selectedCartItems)
-    const sum = selectedCartItems.reduce((acc, id) => {
-      const item = cart.find(item => item.cartId === id)
-      return acc + item.quantity * item.Product.price
-    })
+    const selectedCart = cart.filter(item => selectedCartItems.includes(item.cartId))
+    console.log('Selected cart:', selectedCart)
+    const sum = selectedCart.reduce((acc, item) => acc + item.quantity * item.Product.price, 0)
 
     if (user.balance < sum) {
       dispatch(createNotification('余额不足', 'error'))
@@ -77,7 +76,7 @@ const Cart = () => {
       setConfirmDisabled(false)
       setLoading(false)
 
-      navigate('/orders')
+      navigate('/buy-orders')
     } catch (error) {
       setConfirmDisabled(false)
       setLoading(false)
